@@ -12,10 +12,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def hello_world():
     return 'hi from micro message rna project'
 
-@app.route('/app')
-@cross_origin('*')
-def get_app():
-    return send_from_directory('./../sise.micro-rna-m-rna-targets-interactions.frontend/react-app/build', 'index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
