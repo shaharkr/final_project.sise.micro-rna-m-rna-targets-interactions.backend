@@ -10,7 +10,11 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @app.route('/')
 @cross_origin("*")
 def hello_world():
-    return 'hi from micro message rna project'
+    to_ret = {
+        'status': 'ok',
+        'value': 'Hello from micro-message RNA project!'
+    }
+    return jsonify(to_ret)
 
 
 if __name__ == '__main__':
