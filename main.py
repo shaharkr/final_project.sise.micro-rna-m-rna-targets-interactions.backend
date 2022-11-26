@@ -7,7 +7,7 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
-@app.route('/')
+@app.route('/api')
 @cross_origin("*")
 def hello_world():
     to_ret = {
@@ -18,6 +18,6 @@ def hello_world():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
