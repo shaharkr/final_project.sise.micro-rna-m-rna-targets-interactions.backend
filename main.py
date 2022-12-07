@@ -18,6 +18,7 @@ def hello_world():
 
 
 if __name__ == '__main__':
+    print("hii")
     app.run(debug=True, host='0.0.0.0', port=5000)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
