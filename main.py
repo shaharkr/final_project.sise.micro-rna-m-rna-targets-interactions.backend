@@ -12,7 +12,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def hello_world():
     to_ret = {
         'status': 'ok',
-        'value': 'Hello from micro-message RNA project!'
+        'value': 'Hello from micro-message RNA project! hiiii'
     }
     return jsonify(to_ret)
 
