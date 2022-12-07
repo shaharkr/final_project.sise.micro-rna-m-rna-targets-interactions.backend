@@ -12,12 +12,13 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 def hello_world():
     to_ret = {
         'status': 'ok',
-        'value': 'Hello from micro-message RNA project!'
+        'value': 'Hello from micro-message RNA project! hiiii'
     }
     return jsonify(to_ret)
 
 
 if __name__ == '__main__':
+    print("hii")
     app.run(debug=True, host='0.0.0.0', port=5000)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
