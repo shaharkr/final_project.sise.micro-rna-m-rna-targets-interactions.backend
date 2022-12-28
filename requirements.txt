@@ -2,3 +2,5 @@ flask==2.2.2
 flask_cors==3.0.10
 pandas==1.5.2
 numpy==1.23.5
+flask-sqlalchemy
+psycopg2

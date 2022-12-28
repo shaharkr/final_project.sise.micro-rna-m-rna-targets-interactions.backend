@@ -1,2 +1,4 @@
 .idea/
 # test
+config.ini
+__pycache__
