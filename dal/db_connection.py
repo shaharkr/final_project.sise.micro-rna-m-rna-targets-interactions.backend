@@ -65,3 +65,23 @@ class RegionOption(db.Model):
     
     def __repr__(self):
         return f"<RegionOption: region-{self.region}, data_set_id-{self.data_set_id}>"
+
+
+class GeneIdOption(db.Model):
+    __table__ = db.Table('distincted_gene_id', db.metadata,
+        db.Column("Gene_ID", db.String(200), nullable=False, primary_key=True),
+        db.Column("data_set_id", db.Integer, primary_key=True)
+        )
+    
+    def __repr__(self):
+        return f"<GeneIdOption: Gene_ID-{self.Gene_ID}, data_set_id-{self.data_set_id}>"
+
+
+class SeedFamilyOption(db.Model):
+    __table__ = db.Table('distincted_seed_family', db.metadata,
+        db.Column("seed_family", db.String(200), nullable=False, primary_key=True),
+        db.Column("data_set_id", db.Integer, primary_key=True)
+        )
+    
+    def __repr__(self):
+        return f"<SeedFamilyOption: seed_family-{self.seed_family}, data_set_id-{self.data_set_id}>"

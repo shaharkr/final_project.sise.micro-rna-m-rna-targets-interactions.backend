@@ -1,15 +1,8 @@
 from dal.db_connection import DataSet, db, executor
-from dal.db_connection import SiteOption, RegionOption
-# import concurrent.futures
+from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, RegionOption
 
-def get_organisms():
-    t = executor.submit(get_data_sets)
-    data_sets_dict = t.result()
-    search_options_dict = get_search_options()
-    for op_name, options_of_data_sets_dict in search_options_dict.items():
-        for data_set_id, options_list in options_of_data_sets_dict.items():
-            if data_set_id in data_sets_dict:
-                data_sets_dict[data_set_id]["searchOptions"][op_name] = options_list
+def get_organisms(with_options=False):
+    data_sets_dict = get_data_sets(with_options)
     organisms_dict = {}
     for data_set in data_sets_dict.values():
         if data_set["organism"].id not in organisms_dict:
@@ -21,7 +14,9 @@ def get_organisms():
     organisms_list = list(organisms_dict.values())
     return organisms_list
 
-def get_data_sets():
+def get_data_sets(with_options=False):
+    if with_options:
+        search_options_dict = get_search_options()
     data_sets = db.session.query(DataSet)
     data_sets_dict = {}
     for data_set in data_sets:
@@ -29,17 +24,23 @@ def get_data_sets():
                                         "name": data_set.name,
                                         "interactionsAmount": data_set.interactions_amount,
                                         "datasetMB": data_set.data_set_mb,
-                                        "searchOptions": {"seedFamilies": None, "miRnaIds": None, "miRnaSeqs": None,
-                                                        "sites": None, "geneIds": None, "regions": None},
                                         "organism" : data_set.organism}
+        if with_options:
+            data_sets_dict[data_set.id]["searchOptions"] = {"seedFamilies": None, "miRnaIds": None, "miRnaSeqs": None,
+                                                            "sites": None, "geneIds": None, "regions": None}
+    if with_options:
+        for op_name, options_of_data_sets_dict in search_options_dict.items():
+            for data_set_id, options_list in options_of_data_sets_dict.items():
+                if data_set_id in data_sets_dict:
+                    data_sets_dict[data_set_id]["searchOptions"][op_name] = options_list
     return data_sets_dict
 
 def get_search_options():
-    options_details_dict = {"sites": [SiteOption, "site"], "regions": [RegionOption, "region"]}
-    workers = []    # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    options_details_dict = {"seedFamilies":[SeedFamilyOption, "seed_family"],
+                            "sites": [SiteOption, "site"],"geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
+    workers = []
     for op_name, op_details in options_details_dict.items():
         workers.append(executor.submit(get_search_option, op_name, op_details[0], op_details[1]))
-    # executor.shutdown(wait=True)
     return dict([w.result() for w in workers])
 
 

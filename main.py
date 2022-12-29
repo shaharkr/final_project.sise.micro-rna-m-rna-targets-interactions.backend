@@ -33,7 +33,7 @@ def end_without_api():
 def get_organisms_details():
     organisms_list = []
     try:
-        organisms_list = organisms.get_organisms()
+        organisms_list = organisms.get_organisms(with_options=True)
     except Exception as e:
         print(f'failed to get organisms. error: {str(e)}')
     return organisms_list
