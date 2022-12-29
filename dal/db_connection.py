@@ -1,7 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from configurator import Configurator
+from flask_executor import Executor
 
 db = SQLAlchemy()
+executor = Executor()
 
 def init_db_connector(app):
     DB_URL = None
@@ -17,6 +19,7 @@ def init_db_connector(app):
 
         # db = SQLAlchemy(app)
         db.init_app(app)
+        executor.init_app(app)
     except Exception as e:
         print(f'failed to init the db connection. error: {str(e)}')
 
@@ -45,4 +48,20 @@ class DataSet(db.Model):
         return f"<DataSet: id-{self.id}, oranism-{self.organism}>"
 
 
+class SiteOption(db.Model):
+    __table__ = db.Table('distincted_sites', db.metadata,
+        db.Column("site", db.String(200), nullable=False, primary_key=True),
+        db.Column("data_set_id",db.Integer, primary_key=True)
+        )
+    def __repr__(self):
+        return f"<SiteOption: site-{self.site}, data_set_id-{self.data_set_id}>"
 
+
+class RegionOption(db.Model):
+    __table__ = db.Table('distincted_regions', db.metadata,
+        db.Column("region", db.String(200), nullable=False, primary_key=True),
+        db.Column("data_set_id", db.Integer, primary_key=True)
+        )
+    
+    def __repr__(self):
+        return f"<RegionOption: region-{self.region}, data_set_id-{self.data_set_id}>"
