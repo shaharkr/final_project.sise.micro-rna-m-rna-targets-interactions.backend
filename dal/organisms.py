@@ -24,10 +24,9 @@ def get_data_sets(with_options=False):
                                         "name": data_set.name,
                                         "interactionsAmount": data_set.interactions_amount,
                                         "datasetMB": data_set.data_set_mb,
+                                        "searchOptions": {"seedFamilies": [], "miRnaIds": [], "sites": [],
+                                                          "geneIds": [], "regions": []},
                                         "organism" : data_set.organism}
-        if with_options:
-            data_sets_dict[data_set.id]["searchOptions"] = {"seedFamilies": None, "miRnaIds": None, "miRnaSeqs": None,
-                                                            "sites": None, "geneIds": None, "regions": None}
     if with_options:
         for op_name, options_of_data_sets_dict in search_options_dict.items():
             for data_set_id, options_list in options_of_data_sets_dict.items():
@@ -36,24 +35,45 @@ def get_data_sets(with_options=False):
     return data_sets_dict
 
 def get_search_options():
-    options_details_dict = {"seedFamilies":[SeedFamilyOption, "seed_family"],
-                            "sites": [SiteOption, "site"],"geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
+    """ This function create workers and get all search option for all datasets in parallel working.
+    each worker get_search_option use function.
+    Returns:
+        list of tuples that returnd from each worker.
+    """
+    options_details_dict = {"seedFamilies":[SeedFamilyOption, "seed_family"], "sites": [SiteOption, "site"],
+                            "geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
     workers = []
     for op_name, op_details in options_details_dict.items():
         workers.append(executor.submit(get_search_option, op_name, op_details[0], op_details[1]))
     return dict([w.result() for w in workers])
 
 
-def get_search_option(name, option, column_name):
+def get_search_option(op_name: str, option, column_name: str):
+    """This function takes three arguments: op_name, option and column_name. It extract the
+    distincted values of column_name in mirna_mrna_interaction table (all values of the options ORM object).
+    
+    Args:
+        op_name (str): The option name as need to return in the response.
+                       E.g. -> "seedFamilies"
+        option (db.Model): The appropriate class of the search option.
+                           E.g. -> SeedFamilyOption
+        column_name (str): The column name of the appropriate option as called in db.
+                           E.g. -> "seed_family" 
+        
+    Returns:
+        tuple of (op_name, dictionary).
+        The dictionary is pairs of dataset id and distincted values  list of the appropriate search option.
+        E.g. -> ("regions", {2 : ["3utr", "5utr", "coding", "lncRNA"]})
+    """
     res = {}
-    print(f'---start extraction of {name}')
+    print(f'---start extraction of {op_name}')
     try:
         data = db.session.query(option).all()
         for d in data:
             if d.data_set_id not in res:
                 res[d.data_set_id] = []
             res[d.data_set_id].append(getattr(d, column_name))
-        print(f'---end extraction of {name}')
+        print(f'---end extraction of {op_name}')
     except Exception as e:
-        print(f'---extraction failed- {name}. error: {str(e)}')
-    return (name, res)
+        print(f'---extraction failed- {op_name}. error: {str(e)}')
+    return (op_name, res)
