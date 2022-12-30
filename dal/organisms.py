@@ -1,5 +1,5 @@
 from dal.db_connection import DataSet, db, executor
-from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, RegionOption
+from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, RegionOption, mirnaIdOption
 
 def get_organisms(with_options=False):
     data_sets_dict = get_data_sets(with_options)
@@ -40,8 +40,8 @@ def get_search_options():
     Returns:
         list of tuples that returnd from each worker.
     """
-    options_details_dict = {"seedFamilies":[SeedFamilyOption, "seed_family"], "sites": [SiteOption, "site"],
-                            "geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
+    options_details_dict = {"seedFamilies":[SeedFamilyOption, "seed_family"], "miRnaIds": [mirnaIdOption, "mirna_id"],
+                            "sites": [SiteOption, "site"], "geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
     workers = []
     for op_name, op_details in options_details_dict.items():
         workers.append(executor.submit(get_search_option, op_name, op_details[0], op_details[1]))
@@ -70,9 +70,12 @@ def get_search_option(op_name: str, option, column_name: str):
     try:
         data = db.session.query(option).all()
         for d in data:
+            op_value = getattr(d, column_name)
+            if op_value is None or op_value == "" or op_value == "None":
+                continue
             if d.data_set_id not in res:
                 res[d.data_set_id] = []
-            res[d.data_set_id].append(getattr(d, column_name))
+            res[d.data_set_id].append(op_value)
         print(f'---end extraction of {op_name}')
     except Exception as e:
         print(f'---extraction failed- {op_name}. error: {str(e)}')
