@@ -95,3 +95,26 @@ class mirnaIdOption(db.Model):
     
     def __repr__(self):
         return f"<mirnaIdOption: mirna_id-{self.mirna_id}, data_set_id-{self.data_set_id}>"
+
+
+class Interaction(db.Model):
+    __tablename__ = 'mirna_mrna_interactions'
+    index = db.Column(db.Integer, primary_key=True)
+    data_set_id = db.Column(db.Integer, primary_key=True)
+    mirna_id = db.Column(db.String(200))
+    mirna_sequence = db.Column(db.String(200))
+    seed_family = db.Column(db.String(200))
+    site = db.Column(db.String(200))
+    region = db.Column(db.String(200))
+    start = db.Column(db.Integer)
+    end = db.Column(db.Integer)
+    mrna_bulge = db.Column(db.String(200))
+    mrna_inter = db.Column(db.String(200))
+    mir_inter = db.Column(db.String(200))
+    mir_bulge = db.Column(db.String(200))
+    Gene_ID = db.Column(db.String(200))
+    Energy_MEF_Duplex = db.Column(db.Float)
+    
+    def __repr__(self):
+        return f"<Interaction: index-{self.index}, data_set_id-{self.data_set_id}>"
+    

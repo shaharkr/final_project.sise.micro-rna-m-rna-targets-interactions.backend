@@ -1,5 +1,7 @@
 from dal.db_connection import DataSet, db, executor
 from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, RegionOption, mirnaIdOption
+from dal.db_connection import Interaction
+
 
 def get_organisms(with_options=False):
     data_sets_dict = get_data_sets(with_options)
@@ -80,3 +82,29 @@ def get_search_option(op_name: str, option, column_name: str):
     except Exception as e:
         print(f'---extraction failed- {op_name}. error: {str(e)}')
     return (op_name, res)
+
+
+def get_data_set_interactions(data_set_id):
+    interactions = []
+    try:
+        results = Interaction.query.filter_by(data_set_id=data_set_id).limit(750).all()
+        for interaction in results:
+            interactions.append({"index": interaction.index,
+                                "dataSetId": interaction.data_set_id,
+                                "miRnaId": interaction.mirna_id,
+                                "miRnaSeq": interaction.mirna_sequence,
+                                "seedFamily": interaction.seed_family,
+                                "site": interaction.site,
+                                "region": interaction.region,
+                                "start": interaction.start,
+                                "end": interaction.end,
+                                "mrnaBulge": interaction.mrna_bulge,
+                                "mrnaInter": interaction.mrna_inter,
+                                "mirInter": interaction.mir_inter,
+                                "mirBulge": interaction.mir_bulge,
+                                "energyMefDuplex": interaction.Energy_MEF_Duplex,
+                                "geneId": interaction.Gene_ID
+                            })
+    except Exception as e:
+        print(f'dal failed to get interactions of data set id- {data_set_id}. error: {str(e)}')
+    return interactions

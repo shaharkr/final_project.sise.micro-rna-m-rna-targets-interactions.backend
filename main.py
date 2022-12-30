@@ -41,8 +41,18 @@ def get_organisms_details():
     try:
         organisms_list = organisms.get_organisms(with_options=with_search_options)
     except Exception as e:
-        print(f'failed to get organisms. error: {str(e)}')
+        print(f'app failed to get organisms. error: {str(e)}')
     return organisms_list
+
+
+@app.route('/api/organisms/datasets/<int:data_set_id>/interactions', methods=['GET'])
+def get_data_set_interactions(data_set_id):
+    interactions = []
+    try:
+        interactions = organisms.get_data_set_interactions(data_set_id)
+    except Exception as e:
+        print(f'app failed to get interactions of data set id- {data_set_id}. error: {str(e)}')
+    return interactions
 
 
 if __name__ == '__main__':
