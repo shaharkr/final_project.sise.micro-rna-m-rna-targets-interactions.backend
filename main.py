@@ -33,7 +33,13 @@ def end_without_api():
 def get_organisms_details():
     organisms_list = []
     try:
-        organisms_list = organisms.get_organisms(with_options=True)
+        with_search_options = request.args.get('searchOptions')
+        with_search_options = eval(with_search_options.lower().capitalize())
+    except Exception as e:
+        print('searchOptions is null or not set properly (as true or flase)')
+        with_search_options = False
+    try:
+        organisms_list = organisms.get_organisms(with_options=with_search_options)
     except Exception as e:
         print(f'failed to get organisms. error: {str(e)}')
     return organisms_list
