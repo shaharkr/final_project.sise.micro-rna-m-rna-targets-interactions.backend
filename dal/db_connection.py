@@ -40,8 +40,8 @@ class DataSet(db.Model):
     __tablename__ = 'data_set'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    data_set_mb = db.Column(db.Float)
-    interactions_amount = db.Column(db.Integer)
+    data_set_mb = db.Column(db.Float, nullable=False)
+    interactions_amount = db.Column(db.Integer, nullable=False)
     organism_id = db.Column(db.Integer, db.ForeignKey('organisms.id'))
     
     def __repr__(self):
@@ -85,3 +85,13 @@ class SeedFamilyOption(db.Model):
     
     def __repr__(self):
         return f"<SeedFamilyOption: seed_family-{self.seed_family}, data_set_id-{self.data_set_id}>"
+
+
+class mirnaIdOption(db.Model):
+    __table__ = db.Table('distincted_mirna_id', db.metadata,
+        db.Column("mirna_id", db.String(200), nullable=False, primary_key=True),
+        db.Column("data_set_id", db.Integer, primary_key=True)
+        )
+    
+    def __repr__(self):
+        return f"<mirnaIdOption: mirna_id-{self.mirna_id}, data_set_id-{self.data_set_id}>"
