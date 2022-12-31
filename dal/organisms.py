@@ -90,7 +90,7 @@ def get_data_set_interactions(data_set_id):
         results = Interaction.query.filter_by(data_set_id=data_set_id).limit(750).all()
         for interaction in results:
             interactions.append({"index": interaction.index,
-                                "dataSetId": interaction.data_set_id,
+                                "datasetId": interaction.data_set_id,
                                 "miRnaId": interaction.mirna_id,
                                 "miRnaSeq": interaction.mirna_sequence,
                                 "seedFamily": interaction.seed_family,
