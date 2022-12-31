@@ -43,7 +43,7 @@ def get_search_options():
         list of tuples that returnd from each worker.
     """
     options_details_dict = {"seedFamilies":[SeedFamilyOption, "seed_family"], "miRnaIds": [mirnaIdOption, "mirna_id"],
-                            "sites": [SiteOption, "site"], "geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
+                             "geneIds":[GeneIdOption, "Gene_ID"],  "regions": [RegionOption, "region"]}
     workers = []
     for op_name, op_details in options_details_dict.items():
         workers.append(executor.submit(get_search_option, op_name, op_details[0], op_details[1]))
