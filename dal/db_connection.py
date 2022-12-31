@@ -5,6 +5,7 @@ from flask_executor import Executor
 db = SQLAlchemy()
 executor = Executor()
 
+
 def init_db_connector(app):
     DB_URL = None
     try:
