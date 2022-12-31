@@ -2,10 +2,19 @@ from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS, cross_origin
 from dal.db_connection import init_db_connector
 import dal.organisms as organisms
+from flask_compress import Compress
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+Compress(app)
+app.config["COMPRESS_REGISTER"] = False
+app.config['COMPRESS_ALGORITHM'] = 'gzip'
+
+
+compress = Compress()
+compress.init_app(app)
 
 init_db_connector(app)
 
@@ -30,6 +39,7 @@ def end_without_api():
 
 
 @app.route('/api/organisms/details', methods=['GET'])
+@compress.compressed()
 def get_organisms_details():
     organisms_list = []
     try:
