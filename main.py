@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 from dal.db_connection import init_db_connector
 import dal.organisms as organisms
 from flask_compress import Compress
+import dal.interactions as interactions
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -63,6 +64,23 @@ def get_data_set_interactions(data_set_id):
     except Exception as e:
         print(f'app failed to get interactions of data set id- {data_set_id}. error: {str(e)}')
     return interactions
+
+
+@app.route('/api/interactions', methods=['GET'])
+def get_interactions():
+    interactions_result = []
+    try:
+        data_sets_ids = request.args.getlist('datasetsIds')
+        seed_families = request.args.getlist('seedFamilies')
+        mirna_ids = request.args.getlist('miRnaIds')
+        mirna_seqs = request.args.getlist('miRnaSeqs')
+        sites = request.args.getlist('sites')
+        gene_ids = request.args.getlist('geneIds')
+        regions = request.args.getlist('regions')
+        interactions_result = interactions.get_interactions(data_sets_ids, seed_families, mirna_ids, mirna_seqs, sites, gene_ids, regions)
+    except Exception as e:
+        print(f'app failed to get interactions. error: {str(e)}')
+    return interactions_result
 
 
 if __name__ == '__main__':
