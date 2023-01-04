@@ -12,4 +12,7 @@ class Configurator:
         password = self.parser['DATABASE']['password']
         db_name = self.parser['DATABASE']['database']
         db_url = f'postgresql://{user}:{password}@{host}:{port}/{db_name}'
-        return db_url   
+        return db_url
+
+    def get_mode(self):
+        return self.parser['ENV']['mode']

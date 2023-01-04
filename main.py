@@ -4,6 +4,8 @@ from dal.db_connection import init_db_connector
 import dal.organisms as organisms
 from flask_compress import Compress
 import dal.interactions as interactions
+from configurator import Configurator
+from waitress import serve
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -18,7 +20,6 @@ compress = Compress()
 compress.init_app(app)
 
 init_db_connector(app)
-
 
 @app.route('/api')
 @cross_origin("*")
@@ -84,5 +85,11 @@ def get_interactions():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    confg = Configurator()
+    mode = confg.get_mode()
+    if mode == 'dev':
+        app.run(debug=True, host='0.0.0.0', port=5000)
+    else:
+        serve(app, host='0.0.0.0', port=5000, threads=4)
+
 
