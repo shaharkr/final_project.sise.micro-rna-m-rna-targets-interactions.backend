@@ -30,3 +30,18 @@ Information about the config.ini file and the Configurator class, including how 
 ## Additional Resources
 
 Links to any additional resources or documentation related to the project.
+
+
+
+## Table of Contents
+
+- [Section 1](#section-1)
+- [Section 2](#section-2)
+
+## Section 1
+
+Content for section 1.
+
+## Section 2
+
+Content for section 2.
