@@ -6,4 +6,4 @@ flask-sqlalchemy
 psycopg2
 flask_executor
 flask-compress
-gunicorn
+waitress
