@@ -9,7 +9,7 @@ Created By:<br>
 
 ## Table of Contents
 
-- [Web site for miRNA-mRNA interactions data](#Web site for miRNA-mRNA interactions data)
+- [Web site for miRNA-mRNA interactions data](#Web_site_for_miRNA-mRNA_interactions_data)
 - [Getting Started](#Getting Started)
 - [Endpoints](#Endpoints)
 - [Data Access Layer](#Data Access Layer)
