@@ -22,15 +22,15 @@ The backend is developed with Python Flask, and the data is stored and handled w
 ## Getting_Started
 
 In order to set up the development environment and run the project, we create a file called requirements.txt.
-All the packages we use in the project are in that file.
-flask==2.2.2
-flask_cors==3.0.10
-pandas==1.5.2
-numpy==1.23.5
-flask-sqlalchemy
-psycopg2
-flask_executor
-flask-compress
+All the packages we use in the project are in that file.<br>
+flask==2.2.2<br>
+flask_cors==3.0.10<br>
+pandas==1.5.2<br>
+numpy==1.23.5<br>
+flask-sqlalchemy<br>
+psycopg2<br>
+flask_executor<br>
+flask-compress<br>
 waitress
 
 ## Endpoints
