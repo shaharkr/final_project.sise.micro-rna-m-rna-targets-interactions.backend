@@ -9,11 +9,11 @@ Created By:<br>
 
 ## Table of Contents
 
-- [Web site for miRNA-mRNA interactions data](#section-1)
-- [Getting Started](#section-2)
-- [Endpoints](#section-3)
-- [Data Access Layer](#section-4)
-- [Configuration](#section-5)
+- [Web site for miRNA-mRNA interactions data](#Web site for miRNA-mRNA interactions data)
+- [Getting Started](#Getting Started)
+- [Endpoints](#Endpoints)
+- [Data Access Layer](#Data Access Layer)
+- [Configuration](#Configuration)
 
 
 ## Web site for miRNA-mRNA interactions data
