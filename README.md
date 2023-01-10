@@ -9,13 +9,13 @@ Created By:<br>
 
 ## Table of Contents
 
-- [Web site for miRNA-mRNA interactions data](#Web_site_for_miRNA-mRNA_interactions_data)
-- [Getting Started](#Getting_Started)
+- [Web site for miRNA-mRNA interactions data](#title)
+- [Getting Started](#Getting Started)
 - [Endpoints](#Endpoints)
-- [Data Access Layer](#Data_Access_Layer)
+- [Data Access Layer](#Data Access Layer)
 - [Configuration](#Configuration)
 
-
+# title
 ## Web site for miRNA-mRNA interactions data
 
 The backend is developed with Python Flask, and the data is stored and handled with Postgres SQL.
