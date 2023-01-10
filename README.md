@@ -41,7 +41,7 @@ waitress
 
 132.73.84.177/api/organisms/datasets/<int:data_set_id>/interactions - return list of interactions of dataset:<int:data_set_id> in json
 
-132.73.84.177/api/interactions - return liust of interactions base on search filters:
+132.73.84.177/api/interactions - return list of interactions base on search filters:
 (datasetsIds, seedFamilies, miRnaIds, miRnaSeqs, sites, geneIds, regions)           
 
 ## Data_Access_Layer
