@@ -7,7 +7,7 @@ Created By:<br>
  Uri Zlotkin<br>
  Shahar Kramer<br>
 
-## Table of Contents
+## Sections
 
 - [Web site for miRNA-mRNA interactions data](#Web_site_for_miRNA-mRNA_interactions_data)
 - [Getting Started](#Getting_Started)
