@@ -7,41 +7,54 @@ Created By:<br>
  Uri Zlotkin<br>
  Shahar Kramer<br>
 
-# Project Title
+## Table of Contents
 
-A brief description of the project, including its purpose and the technologies used.
+- [Web site for miRNA-mRNA interactions data](#section-1)
+- [Getting Started](#section-2)
+- [Endpoints](#section-3)
+- [Data Access Layer](#section-4)
+- [Configuration](#section-5)
+
+
+## Web site for miRNA-mRNA interactions data
+
+The backend is developed with Python Flask, and the data is stored and handled with Postgres SQL.
 
 ## Getting Started
 
-Instructions for setting up the development environment and running the project.
+In order to set up the development environment and run the project, we create a file called requirements.txt.
+All the packages we use in the project are in that file.
+flask==2.2.2
+flask_cors==3.0.10
+pandas==1.5.2
+numpy==1.23.5
+flask-sqlalchemy
+psycopg2
+flask_executor
+flask-compress
+waitress
 
 ## Endpoints
 
-A list of the endpoints available in the app, including a short description of each.
+132.73.84.177/api - welcome message for the api
+
+132.73.84.177/api/organisms/details - return list of organisms in json.
+
+132.73.84.177/api/organisms/datasets/<int:data_set_id>/interactions - return list of interactions of dataset:<int:data_set_id> in json
+
+132.73.84.177/api/interactions - return liust of interactions base on search filters:
+(datasetsIds, seedFamilies, miRnaIds, miRnaSeqs, sites, geneIds, regions)           
 
 ## Data Access Layer
 
-A description of the data access layer, including the technologies used (such as flask_sqlalchemy) and how it interacts with the database.
+PostgreSQL is used as a database, and flask_sqlalchemy is used to communicate with it.
+Each table is translated into a Python object by mapping it to a python object.
+Our objects: (Organism, DataSet, Interaction, mirnaIdOption, SeedFamilyOption, GeneIdOption, RegionOption, SiteOption).
 
 ## Configuration
 
-Information about the config.ini file and the Configurator class, including how to obtain the connection string to the database.
-
-## Additional Resources
-
-Links to any additional resources or documentation related to the project.
+There is a config.ini file and a Configurator class.
+Database connection information is stored in the config.ini file, which is not uploaded to git.
+The Configurator class reads the necessary data from the config.in file.
 
 
-
-## Table of Contents
-
-- [Section 1](#section-1)
-- [Section 2](#section-2)
-
-## Section 1
-
-Content for section 1.
-
-## Section 2
-
-Content for section 2.
