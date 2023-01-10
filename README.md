@@ -9,18 +9,17 @@ Created By:<br>
 
 ## Table of Contents
 
-- [Web site for miRNA-mRNA interactions data](#title)
-- [Getting Started](#Getting Started)
+- [Web site for miRNA-mRNA interactions data](#Web_site_for_miRNA-mRNA_interactions_data)
+- [Getting Started](#Getting_Started)
 - [Endpoints](#Endpoints)
-- [Data Access Layer](#Data Access Layer)
+- [Data Access Layer](#Data_Access_Layer)
 - [Configuration](#Configuration)
 
-#### title
-## Web site for miRNA-mRNA interactions data
+## Web_site_for_miRNA-mRNA_interactions_data
 
 The backend is developed with Python Flask, and the data is stored and handled with Postgres SQL.
 
-## Getting Started
+## Getting_Started
 
 In order to set up the development environment and run the project, we create a file called requirements.txt.
 All the packages we use in the project are in that file.
@@ -45,7 +44,7 @@ waitress
 132.73.84.177/api/interactions - return liust of interactions base on search filters:
 (datasetsIds, seedFamilies, miRnaIds, miRnaSeqs, sites, geneIds, regions)           
 
-## Data Access Layer
+## Data_Access_Layer
 
 PostgreSQL is used as a database, and flask_sqlalchemy is used to communicate with it.
 Each table is translated into a Python object by mapping it to a python object.
