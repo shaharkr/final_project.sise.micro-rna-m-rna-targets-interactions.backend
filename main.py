@@ -84,6 +84,17 @@ def get_interactions():
     return interactions_result
 
 
+@app.route('/api/generalSearchInteractions/interactions', methods=['GET'])
+def get_general_interactions():
+    interactions_result = []
+    try:
+        query_string = request.args.get('q')
+        interactions_result = interactions.get_interactions_gneral_search(query_string)
+    except Exception as e:
+        print(f'app failed to get general interactions. error: {str(e)}')
+    return interactions_result
+
+
 if __name__ == '__main__':
     confg = Configurator()
     mode = confg.get_mode()
