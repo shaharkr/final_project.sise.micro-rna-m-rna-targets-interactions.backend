@@ -7,3 +7,4 @@ psycopg2
 flask_executor
 flask-compress
 waitress
+Flask-Caching

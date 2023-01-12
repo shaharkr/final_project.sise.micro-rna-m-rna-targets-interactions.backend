@@ -7,6 +7,7 @@ import dal.interactions as interactions
 from configurator import Configurator
 from waitress import serve
 
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -20,6 +21,7 @@ compress = Compress()
 compress.init_app(app)
 
 init_db_connector(app)
+
 
 @app.route('/api')
 @cross_origin("*")
@@ -38,7 +40,6 @@ def end_without_api():
         'value': 'Go to api'
     }
     return jsonify(to_ret)
-
 
 @app.route('/api/organisms/details', methods=['GET'])
 @compress.compressed()

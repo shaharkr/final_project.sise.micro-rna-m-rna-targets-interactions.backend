@@ -1,8 +1,9 @@
-from dal.db_connection import db
+from dal.db_connection import db, cache
 from dal.db_connection import Interaction
 from sqlalchemy import or_
 
 
+@cache.memoize(timeout=12000)
 def get_interactions(data_sets_ids, seed_families, mirna_ids,
                      mirna_seqs, sites, gene_ids, regions):
     interactions = []
@@ -21,6 +22,7 @@ def get_interactions(data_sets_ids, seed_families, mirna_ids,
     return interactions
 
 
+@cache.memoize(timeout=12000)
 def get_interactions_gneral_search(query_string):
     interactions = []
     if query_string is None or query_string == '':
