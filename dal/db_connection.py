@@ -1,10 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from configurator import Configurator
 from flask_executor import Executor
+from flask_caching import Cache
 
 db = SQLAlchemy()
 executor = Executor()
-
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
 
 def init_db_connector(app):
     DB_URL = None
@@ -21,6 +22,7 @@ def init_db_connector(app):
         # db = SQLAlchemy(app)
         db.init_app(app)
         executor.init_app(app)
+        cache.init_app(app)
     except Exception as e:
         print(f'failed to init the db connection. error: {str(e)}')
 
