@@ -1,9 +1,9 @@
-from dal.db_connection import DataSet, db, executor
+from dal.db_connection import DataSet, db, executor, cache
 from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, RegionOption, mirnaIdOption
 from dal.db_connection import Interaction
 from dal.interactions import create_interactions_list
 
-
+@cache.memoize(timeout=12000)
 def get_organisms(with_options=False):
     data_sets_dict = get_data_sets(with_options)
     organisms_dict = {}
@@ -84,7 +84,7 @@ def get_search_option(op_name: str, option, column_name: str):
         print(f'---extraction failed- {op_name}. error: {str(e)}')
     return (op_name, res)
 
-
+@cache.memoize(timeout=12000)
 def get_data_set_interactions(data_set_id):
     interactions = []
     try:
