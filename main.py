@@ -95,6 +95,15 @@ def get_general_interactions():
         print(f'app failed to get general interactions. error: {str(e)}')
     return interactions_result
 
+@app.route('/api/download/datasets/<int:data_set_id>', methods=['GET'])
+def download(data_set_id):
+    download_file = ['failed']
+    try:
+        download_file = interactions.downlod_dataset(data_set_id)
+    except Exception as e:
+        print(f'app failed to get general interactions. error: {str(e)}')
+    return download_file
+
 
 if __name__ == '__main__':
     confg = Configurator()

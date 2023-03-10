@@ -1,6 +1,7 @@
-from dal.db_connection import db, cache
+from dal.db_connection import db, cache, Base
 from dal.db_connection import Interaction
 from sqlalchemy import or_
+from flask import jsonify
 
 
 @cache.memoize(timeout=12000)
@@ -66,4 +67,15 @@ def create_interactions_list(results):
                                 "geneId": interaction.Gene_ID
                             })
     return interactions
+
+
+def downlod_dataset(data_set_id):
+    interactions_dict = {}
+    try:
+        results = db.session.query(downloadIntr).filter_by(data_set_id=data_set_id).all()
+        interactions_dict = [interaction.to_dict() for interaction in results]
+    except Exception as e:
+        print(f'dal failed to get general interactions. error: {str(e)}')
+    return jsonify(interactions_dict)
+
     
