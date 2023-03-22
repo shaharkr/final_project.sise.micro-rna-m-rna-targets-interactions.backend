@@ -66,4 +66,8 @@ def create_interactions_list(results):
                                 "geneId": interaction.Gene_ID
                             })
     return interactions
-    
+
+
+@cache.memoize(timeout=12000)
+def get_interaction_id_data(interaction_id):
+    return []
