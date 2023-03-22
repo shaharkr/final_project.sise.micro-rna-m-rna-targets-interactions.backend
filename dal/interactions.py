@@ -1,6 +1,6 @@
 from dal.db_connection import db, cache
 from dal.db_connection import Interaction
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 
 @cache.memoize(timeout=12000)
@@ -69,5 +69,59 @@ def create_interactions_list(results):
 
 
 @cache.memoize(timeout=12000)
-def get_interaction_id_data(interaction_id):
-    return []
+def get_interaction_id_data(index, data_set_id):#interaction_id):# TODO: replace to the original
+    interaction_id_data = {}
+    try:
+        # results = InteractionIdData.query.filter_by(id=interaction_id) # TODO: remove from note
+        results = Interaction.query.filter(and_(Interaction.index == index, Interaction.data_set_id == data_set_id)).all() #TODO: delete this line
+        if len(results) > 0:
+            interaction_id_data = create_interaction_outer_data_object(results[0])
+    except Exception as e:
+        print(f'dal failed to get general interactions. error: {str(e)}')
+    return interaction_id_data
+
+
+def create_interaction_outer_data_object(interaction_id_data):
+    mi_rna_data_dict = {
+            "miRnaId": interaction_id_data.mirna_id,
+            "miRnaSequence": interaction_id_data.mirna_sequence,
+            "seedFamily": interaction_id_data.seed_family,
+            "start": interaction_id_data.start,
+            "end": interaction_id_data.end
+        }
+    
+    m_rna_data_dict = {
+            "region": interaction_id_data.region,
+            "geneId": interaction_id_data.Gene_ID,
+            "geneName": "temp name",  # TODO: need to add this column to DB
+            "sequenceUrl": "https://www.ensembl.org"  # TODO: need to insert to configuration
+        }
+    
+    duplex_structure = create_duplex_structure(interaction_id_data.mrna_bulge,
+                                               interaction_id_data.mrna_inter,
+                                               interaction_id_data.mir_inter,
+                                               interaction_id_data.mir_bulge)
+    interaction_inner_data_dict = {
+            "interactionId": -1, #interaction_id_data.id, # TODO: replace to origenal
+            "organismName": interaction_id_data.organism,
+            "dataSource": interaction_id_data.paper_name,
+            "duplexStructure": duplex_structure,
+            "energyMefDuplex": interaction_id_data.Energy_MEF_Duplex,
+            "mRnaDistToEnd": interaction_id_data.MRNA_Dist_to_end,
+            "mRnaDistToStart": interaction_id_data.MRNA_Dist_to_start,
+            "seedMatchCanonical": interaction_id_data.Seed_match_canonical,
+            "seedMatchNonCanonical": interaction_id_data.Seed_match_noncanonical,
+            "seedMatchStart": interaction_id_data.Seed_match_start
+        }
+    
+    interaction_outer_data_object = {
+        "miRnaData": mi_rna_data_dict,
+        "mRnaData": m_rna_data_dict,
+        "interactionInnerData": interaction_inner_data_dict
+        }
+    return interaction_outer_data_object
+
+
+def create_duplex_structure(mrna_bulge, mrna_inter, mir_inter, mir_bulge):
+    # TODO: need to change for the real duplex structure
+    return f'{mrna_bulge}\n{mrna_inter}\n{mir_inter}\n{mir_bulge}'

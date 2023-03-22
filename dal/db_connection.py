@@ -117,6 +117,13 @@ class Interaction(db.Model):
     mir_bulge = db.Column(db.String(200))
     Gene_ID = db.Column(db.String(200))
     Energy_MEF_Duplex = db.Column(db.Float)
+    Seed_match_start = db.Column(db.Float)
+    MRNA_Dist_to_start = db.Column(db.Float)
+    MRNA_Dist_to_end = db.Column(db.Float)
+    organism = db.Column(db.String(200))
+    paper_name = db.Column(db.String(200))
+    Seed_match_noncanonical = db.Column(db.String(200))
+    Seed_match_canonical = db.Column(db.Boolean)
     
     def __repr__(self):
         return f"<Interaction: index-{self.index}, data_set_id-{self.data_set_id}>"
