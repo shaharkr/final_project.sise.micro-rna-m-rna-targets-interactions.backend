@@ -72,7 +72,7 @@ def create_interactions_list(results):
 def get_interaction_id_data(index, data_set_id):#interaction_id):# TODO: replace to the original
     interaction_id_data = {}
     try:
-        # results = InteractionIdData.query.filter_by(id=interaction_id) # TODO: remove from note
+        # results = Interaction.query.filter_by(id=interaction_id) # TODO: remove from note
         results = Interaction.query.filter(and_(Interaction.index == index, Interaction.data_set_id == data_set_id)).all() #TODO: delete this line
         if len(results) > 0:
             interaction_id_data = create_interaction_outer_data_object(results[0])
@@ -123,5 +123,12 @@ def create_interaction_outer_data_object(interaction_id_data):
 
 
 def create_duplex_structure(mrna_bulge, mrna_inter, mir_inter, mir_bulge):
-    # TODO: need to change for the real duplex structure
-    return f'{mrna_bulge}\n{mrna_inter}\n{mir_inter}\n{mir_bulge}'
+    mrna_bulge_prefix = "mRNA  3’ "
+    mrna_bulge_sufix = " 5’"
+    mrna_inter_prefix = "         "
+    mrna_inter_sufix = "   "
+    mir_inter_prefix = "         "
+    mir_inter_sufix = "   "
+    mir_bulge_prefix = "miRNA 5’ "
+    mir_bulge_sufix = " 3’"
+    return f'{mrna_bulge_prefix}{mrna_bulge}{mrna_bulge_sufix}\n{mrna_inter_prefix}{mrna_inter}{mrna_inter_sufix}\n{mir_inter_prefix}{mir_inter}{mir_inter_sufix}\n{mir_bulge_prefix}{mir_bulge}{mir_bulge_sufix}'
