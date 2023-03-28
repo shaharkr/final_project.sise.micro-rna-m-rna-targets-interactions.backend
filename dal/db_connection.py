@@ -2,12 +2,11 @@ from flask_sqlalchemy import SQLAlchemy
 from configurator import Configurator
 from flask_executor import Executor
 from flask_caching import Cache
-from sqlalchemy.ext.automap import automap_base
+
 # from sqlalchemy import Table, Column, inspect
 db = SQLAlchemy()
 executor = Executor()
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
-
 
 def init_db_connector(app):
     DB_URL = None
@@ -28,6 +27,7 @@ def init_db_connector(app):
     except Exception as e:
         print(f'failed to init the db connection. error: {str(e)}')
 
+    
 class Organism(db.Model):
     __tablename__ = 'organisms'
     id = db.Column(db.Integer, primary_key=True)
@@ -124,23 +124,4 @@ class Interaction(db.Model):
         return f"<Interaction: index-{self.index}, data_set_id-{self.data_set_id}>"
 
 
-# interactions_table = Table('mirna_mrna_interactions', db.metadata, autoload=True, autoload_with=db.engine)
-# class downloadInteraction(db.Model):
-#     __table__ = 'mirna_mrna_interactions'
-#     # Generate columns dynamically based on the table schema
-#     for column in inspect(__table__).columns:
-#         locals()[column.name] = Column(getattr(__table__.c, column.name).type, primary_key=column.primary_key)
 
-#     def to_dict(self):
-#         # Convert the model instance to a dictionary
-#         return {column.name: getattr(self, column.name) for column in inspect(self.__class__).columns}
-
-with main.app.app_context():
-    # create an instance of the automap base
-    Base = automap_base()
-
-    # reflect the tables from the database
-    Base.prepare(db.engine, reflect=True)
-
-    # get the class corresponding to the table you want to map
-    downloadIntr = Base.classes.mirna_mrna_interactions
