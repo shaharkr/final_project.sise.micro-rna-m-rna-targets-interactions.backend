@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, request, Response, stream_with_context
 from flask_cors import CORS, cross_origin
 from dal.db_connection import init_db_connector
 import dal.organisms as organisms
@@ -21,7 +21,6 @@ compress = Compress()
 compress.init_app(app)
 
 init_db_connector(app)
-
 
 @app.route('/api')
 @cross_origin("*")
@@ -95,6 +94,28 @@ def get_general_interactions():
         print(f'app failed to get general interactions. error: {str(e)}')
     return interactions_result
 
+@app.route('/api/download/datasets/<int:data_set_id>', methods=['GET'])
+def stream_csv(data_set_id):
+    # set the file path and content type
+    file_path = f"C:\\datasets\\{data_set_id}.csv"
+    content_type = 'text/csv'
+
+    # define a function that reads the file in 10KB chunks
+    def generate():
+        with open(file_path, 'rb') as f:
+            while True:
+                data = f.read(10240) # 10KB chunk size
+                if not data:
+                    break
+                yield data
+    
+    try:
+    # use the stream_with_context function to stream the response in chunks
+        response = Response(stream_with_context(generate()), mimetype=content_type)
+        response.headers['Content-Disposition'] = f'attachment; filename={data_set_id}'
+        return response
+    except Exception as e:
+        print(f'app failed to get general interactions. error: {str(e)}')
 
 if __name__ == '__main__':
     confg = Configurator()
