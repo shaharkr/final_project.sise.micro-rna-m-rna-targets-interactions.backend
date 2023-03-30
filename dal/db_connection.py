@@ -3,6 +3,7 @@ from configurator import Configurator
 from flask_executor import Executor
 from flask_caching import Cache
 
+# from sqlalchemy import Table, Column, inspect
 db = SQLAlchemy()
 executor = Executor()
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
@@ -26,6 +27,7 @@ def init_db_connector(app):
     except Exception as e:
         print(f'failed to init the db connection. error: {str(e)}')
 
+    
 class Organism(db.Model):
     __tablename__ = 'organisms'
     id = db.Column(db.Integer, primary_key=True)
@@ -120,4 +122,6 @@ class Interaction(db.Model):
     
     def __repr__(self):
         return f"<Interaction: index-{self.index}, data_set_id-{self.data_set_id}>"
-    
+
+
+

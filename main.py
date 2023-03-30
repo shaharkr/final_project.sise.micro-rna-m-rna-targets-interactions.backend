@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from dal.db_connection import init_db_connector
 import dal.organisms as organisms
@@ -21,7 +21,6 @@ compress = Compress()
 compress.init_app(app)
 
 init_db_connector(app)
-
 
 @app.route('/api')
 @cross_origin("*")
@@ -95,6 +94,15 @@ def get_general_interactions():
         print(f'app failed to get general interactions. error: {str(e)}')
     return interactions_result
 
+@app.route('/api/download/datasets/<int:data_set_id>', methods=['GET'])
+def get_full_data_set(data_set_id):
+    response = None
+    try:
+        response = interactions.download_data(data_set_id, path=None)
+    except Exception as e:
+        print(f'app failed to get general interactions. error: {str(e)}')
+    return response
+    
 
 if __name__ == '__main__':
     confg = Configurator()
