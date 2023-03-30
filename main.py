@@ -94,7 +94,7 @@ def get_general_interactions():
         print(f'app failed to get general interactions. error: {str(e)}')
     return interactions_result
 
-@app.route('/api/download/datasets/<int:data_set_id>', methods=['GET'])
+@app.route('/api/organisms/datasets/<int:data_set_id>/interactions/download', methods=['GET'])
 def get_full_data_set(data_set_id):
     response = None
     try:

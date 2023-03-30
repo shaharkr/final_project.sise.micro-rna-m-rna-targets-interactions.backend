@@ -18,4 +18,4 @@ class Configurator:
         return self.parser['ENV']['mode']
     
     def get_path_prefix_of_dataset_location(self):
-        return self.paeser['DATASETS']['path_prefix_of_dataset_location']
+        return self.parser['DATASETS']['path_prefix_of_dataset_location']
