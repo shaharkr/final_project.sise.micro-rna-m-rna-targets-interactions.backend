@@ -1,10 +1,11 @@
 from dal.db_connection import db, cache
-from dal.db_connection import Interaction
+from dal.db_connection import Interaction, DataSet
 from sqlalchemy import or_
 from sqlalchemy import text
 from flask import Response, stream_with_context
 import io
 import csv
+from configurator import Configurator
 
 
 @cache.memoize(timeout=12000)
@@ -105,8 +106,11 @@ def download_search_data(data_set_id):
 def download_data(data_set_id, path):
     # set the file path and content type
     file_path = path
+    path_prefix = Configurator().get_path_prefix_of_dataset_location()
+    data_set = DataSet.query.filter_by(id=data_set_id).all()
+    file_name = data_set[0].name
     if not path:
-        file_path = f"C:\\datasets\\{data_set_id}.csv"
+        file_path = f"{path_prefix}\\{file_name}.csv"
     content_type = 'text/csv'
 
     # define a function that reads the file in 10KB chunks
@@ -121,7 +125,7 @@ def download_data(data_set_id, path):
     try:
     # use the stream_with_context function to stream the response in chunks
         response = Response(stream_with_context(generate()), mimetype=content_type)
-        response.headers['Content-Disposition'] = f'attachment; filename={data_set_id}.csv'
+        response.headers['Content-Disposition'] = f'attachment; filename={file_name}.csv'
         return response
     except Exception as e:
         print(f'app failed to get general interactions. error: {str(e)}')
