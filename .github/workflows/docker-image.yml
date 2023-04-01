@@ -5,7 +5,7 @@ on:
     branches: [ "deploy" ]
 
 jobs:
-
+  # TODO: set the working directory and python task name in a variable
   build:
 
     runs-on: self-hosted
@@ -20,3 +20,8 @@ jobs:
     
     - name: deploy
       run: Copy-Item -Path ./* -Destination "C:\Program Files\sise.micro-message-rna-project\be\sise.micro-rna-m-rna-targets-interactions.backend\deploy" -Recurse -Force
+
+    - name: Restart Python
+      run: |
+        schtasks /end /tn "\micro-message-rna-project\python-on-start"
+        schtasks /run /tn "\micro-message-rna-project\python-on-start"
