@@ -20,3 +20,9 @@ jobs:
     
     - name: deploy
       run: Copy-Item -Path ./* -Destination "C:\Program Files\sise.micro-message-rna-project\be\sise.micro-rna-m-rna-targets-interactions.backend\deploy" -Recurse -Force
+    
+    - name: Restart Python
+      uses: actions/virtual-environments/windows-2019/microsoft-windows-task-scheduler@main
+      with:
+        task-name: 'python-on-start'
+        action: 'run'
