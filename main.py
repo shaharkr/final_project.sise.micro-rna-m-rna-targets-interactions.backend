@@ -27,7 +27,7 @@ init_db_connector(app)
 def hello_world():
     to_ret = {
         'status': 'ok',
-        'value': 'Hello from micro-message RNA project!'
+        'value': 'Hello from micro-message RNA project!@'
     }
     return jsonify(to_ret)
 
