@@ -95,23 +95,12 @@ def get_general_interactions():
         print(f'app failed to get general interactions. error: {str(e)}')
     return interactions_result
 
-# TODO: remove from notes
-# @app.route('/api/interactionOuterData/<int:interaction_id>', methods=['GET'])
-# def get_interaction_data(interaction_id):
-#     interaction_id_data_result = []
-#     try:
-#         interaction_id_data_result = interactions.get_interaction_id_data(interaction_id)
-#     except Exception as e:
-#         print(f'app failed to get interaction id data. error: {str(e)}')
-#     return interaction_id_data_result
 
-
-# TODO:delete
-@app.route('/api/interactionOuterData/<int:index>/<int:data_set_id>', methods=['GET'])
-def get_interaction_data(index, data_set_id):
+@app.route('/api/interactionOuterData/<int:interaction_id>', methods=['GET'])
+def get_interaction_data(interaction_id):
     interaction_id_data_result = []
     try:
-        interaction_id_data_result = interactions.get_interaction_id_data(index, data_set_id)
+        interaction_id_data_result = interactions.get_interaction_id_data(interaction_id)
     except Exception as e:
         print(f'app failed to get interaction id data. error: {str(e)}')
     return interaction_id_data_result

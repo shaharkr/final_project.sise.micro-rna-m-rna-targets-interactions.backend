@@ -1,6 +1,7 @@
 from dal.db_connection import db, cache
 from dal.db_connection import Interaction
 from sqlalchemy import or_, and_
+from configurator import Configurator
 
 
 @cache.memoize(timeout=12000)
@@ -69,13 +70,11 @@ def create_interactions_list(results):
 
 
 @cache.memoize(timeout=12000)
-def get_interaction_id_data(index, data_set_id):#interaction_id):# TODO: replace to the original
+def get_interaction_id_data(interaction_id):
     interaction_id_data = {}
     try:
-        # results = Interaction.query.filter_by(id=interaction_id) # TODO: remove from note
-        results = Interaction.query.filter(and_(Interaction.index == index, Interaction.data_set_id == data_set_id)).all() #TODO: delete this line
-        if len(results) > 0:
-            interaction_id_data = create_interaction_outer_data_object(results[0])
+        results = Interaction.query.filter_by(id=interaction_id)
+        interaction_id_data = create_interaction_outer_data_object(results[0])
     except Exception as e:
         print(f'dal failed to get general interactions. error: {str(e)}')
     return interaction_id_data
@@ -89,12 +88,12 @@ def create_interaction_outer_data_object(interaction_id_data):
             "start": interaction_id_data.start,
             "end": interaction_id_data.end
         }
-    
+    sequence_url = create_sequence_url(interaction_id_data.Gene_ID, interaction_id_data.organism)
     m_rna_data_dict = {
             "region": interaction_id_data.region,
             "geneId": interaction_id_data.Gene_ID,
             "geneName": "temp name",  # TODO: need to add this column to DB
-            "sequenceUrl": "https://www.ensembl.org"  # TODO: need to insert to configuration
+            "sequenceUrl": sequence_url
         }
     
     duplex_structure = create_duplex_structure(interaction_id_data.mrna_bulge,
@@ -102,7 +101,7 @@ def create_interaction_outer_data_object(interaction_id_data):
                                                interaction_id_data.mir_inter,
                                                interaction_id_data.mir_bulge)
     interaction_inner_data_dict = {
-            "interactionId": -1, #interaction_id_data.id, # TODO: replace to origenal
+            "interactionId": interaction_id_data.id,
             "organismName": interaction_id_data.organism,
             "dataSource": interaction_id_data.paper_name,
             "duplexStructure": duplex_structure,
@@ -132,3 +131,11 @@ def create_duplex_structure(mrna_bulge, mrna_inter, mir_inter, mir_bulge):
     mir_bulge_prefix = "miRNA 5’ "
     mir_bulge_sufix = " 3’"
     return f'{mrna_bulge_prefix}{mrna_bulge}{mrna_bulge_sufix}\n{mrna_inter_prefix}{mrna_inter}{mrna_inter_sufix}\n{mir_inter_prefix}{mir_inter}{mir_inter_sufix}\n{mir_bulge_prefix}{mir_bulge}{mir_bulge_sufix}'
+
+
+def create_sequence_url(gene_id, organism):
+    confg = Configurator()
+    relevant_gene_id = gene_id.split('|')[0]
+    ensamble_org_name = confg.get_ensamble_organisms_names_dict()[organism]
+    url_string = confg.get_ensambl_url().format(organism_name=ensamble_org_name, gene_id=relevant_gene_id)
+    return url_string

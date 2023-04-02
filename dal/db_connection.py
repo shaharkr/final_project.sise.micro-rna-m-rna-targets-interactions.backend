@@ -102,8 +102,9 @@ class mirnaIdOption(db.Model):
 
 class Interaction(db.Model):
     __tablename__ = 'mirna_mrna_interactions'
-    index = db.Column(db.Integer, primary_key=True)
-    data_set_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    index = db.Column(db.Integer)
+    data_set_id = db.Column(db.Integer)
     mirna_id = db.Column(db.String(200))
     mirna_sequence = db.Column(db.String(200))
     seed_family = db.Column(db.String(200))
