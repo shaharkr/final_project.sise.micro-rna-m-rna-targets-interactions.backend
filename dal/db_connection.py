@@ -104,8 +104,9 @@ class mirnaIdOption(db.Model):
 
 class Interaction(db.Model):
     __tablename__ = 'mirna_mrna_interactions'
-    index = db.Column(db.Integer, primary_key=True)
-    data_set_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    index = db.Column(db.Integer)
+    data_set_id = db.Column(db.Integer)
     mirna_id = db.Column(db.String(200))
     mirna_sequence = db.Column(db.String(200))
     seed_family = db.Column(db.String(200))
@@ -119,6 +120,13 @@ class Interaction(db.Model):
     mir_bulge = db.Column(db.String(200))
     Gene_ID = db.Column(db.String(200))
     Energy_MEF_Duplex = db.Column(db.Float)
+    Seed_match_start = db.Column(db.Float)
+    MRNA_Dist_to_start = db.Column(db.Float)
+    MRNA_Dist_to_end = db.Column(db.Float)
+    organism = db.Column(db.String(200))
+    paper_name = db.Column(db.String(200))
+    Seed_match_noncanonical = db.Column(db.String(200))
+    Seed_match_canonical = db.Column(db.Boolean)
     
     def __repr__(self):
         return f"<Interaction: index-{self.index}, data_set_id-{self.data_set_id}>"
