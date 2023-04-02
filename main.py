@@ -104,6 +104,16 @@ def get_full_data_set(data_set_id):
     return response
     
 
+@app.route('/api/interactionOuterData/<int:interaction_id>', methods=['GET'])
+def get_interaction_data(interaction_id):
+    interaction_id_data_result = []
+    try:
+        interaction_id_data_result = interactions.get_interaction_id_data(interaction_id)
+    except Exception as e:
+        print(f'app failed to get interaction id data. error: {str(e)}')
+    return interaction_id_data_result
+
+
 if __name__ == '__main__':
     confg = Configurator()
     mode = confg.get_mode()
