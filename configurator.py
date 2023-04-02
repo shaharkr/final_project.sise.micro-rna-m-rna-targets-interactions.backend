@@ -25,3 +25,6 @@ class Configurator:
         dict_str = self.parser['PARAMETERS']['ensambl_orgs_names_dict']
         to_ret = json.loads(dict_str)
         return to_ret
+      
+    def get_path_prefix_of_dataset_location(self):
+        return self.parser['DATASETS']['path_prefix_of_dataset_location']

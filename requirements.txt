@@ -9,3 +9,4 @@ flask-compress
 waitress
 Flask-Caching
 jason
+jsonify
