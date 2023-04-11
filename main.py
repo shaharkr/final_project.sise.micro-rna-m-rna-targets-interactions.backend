@@ -4,8 +4,11 @@ from dal.db_connection import init_db_connector
 import dal.organisms as organisms
 from flask_compress import Compress
 import dal.interactions as interactions
+import dal.download as download
 from configurator import Configurator
 from waitress import serve
+from flask import after_this_request
+import threading
 
 
 app = Flask(__name__)
@@ -21,6 +24,8 @@ compress = Compress()
 compress.init_app(app)
 
 init_db_connector(app)
+
+lock = threading.Lock()
 
 @app.route('/api')
 @cross_origin("*")
@@ -98,7 +103,47 @@ def get_general_interactions():
 def get_full_data_set(data_set_id):
     response = None
     try:
-        response = interactions.download_data(data_set_id, path=None)
+        response = download.download_data(data_set_id, path=None)
+    except Exception as e:
+        print(f'app failed to get general interactions. error: {str(e)}')
+    return response
+
+@app.route('/api/organisms/interactions/download', methods=['GET'])
+def get_search_data():
+    response = None
+    file_path = None
+    try:
+        data_sets_ids = request.args.getlist('datasetsIds')
+        seed_families = request.args.getlist('seedFamilies')
+        mirna_ids = request.args.getlist('miRnaIds')
+        mirna_seqs = request.args.getlist('miRnaSeqs')
+        sites = request.args.getlist('sites')
+        gene_ids = request.args.getlist('geneIds')
+        regions = request.args.getlist('regions')
+        cur_file_num = download.delete_old_files_and_set_new_counter_in_config()
+        file_path = download.get_interactions_for_download(data_sets_ids, seed_families, 
+                                                           mirna_ids, mirna_seqs, sites, 
+                                                           gene_ids, regions, cur_file_num)
+        if file_path:
+            response = download.download_data(data_set_id=-1, path=file_path)
+        else:
+            return None
+    except Exception as e:
+        print(f'app failed to get general interactions. error: {str(e)}')
+    return response
+
+@app.route('/api/generalSearchInteractions/interactions/download', methods=['GET'])
+def get_general_search_data():
+    response = None
+    file_path = None
+    try:
+        query = request.args.getlist('q')
+        file_name = download.get_unique_file_name()
+        file_path = download.get_interactions_gneral_search_for_download(query, file_name)
+        if file_path:
+            response = download.download_data(data_set_id=-1, path=file_path)
+        else:
+            return None
     except Exception as e:
         print(f'app failed to get general interactions. error: {str(e)}')
     return response
