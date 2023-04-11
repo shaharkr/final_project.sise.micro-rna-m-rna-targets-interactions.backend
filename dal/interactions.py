@@ -1,11 +1,6 @@
 from dal.db_connection import db, cache
-from dal.db_connection import Interaction, DataSet
+from dal.db_connection import Interaction
 from sqlalchemy import or_
-from sqlalchemy import text
-from flask import Response, stream_with_context
-import os
-import csv
-from configurator import Configurator
 
 
 @cache.memoize(timeout=12000)
@@ -70,7 +65,4 @@ def create_interactions_list(results):
                                 "energyMefDuplex": interaction.Energy_MEF_Duplex,
                                 "geneId": interaction.Gene_ID
                             })
-    return interactions
-
-    
-    
+    return interactions 

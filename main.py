@@ -7,8 +7,6 @@ import dal.interactions as interactions
 import dal.download as download
 from configurator import Configurator
 from waitress import serve
-from flask import after_this_request
-import threading
 
 
 app = Flask(__name__)
@@ -25,7 +23,6 @@ compress.init_app(app)
 
 init_db_connector(app)
 
-lock = threading.Lock()
 
 @app.route('/api')
 @cross_origin("*")
