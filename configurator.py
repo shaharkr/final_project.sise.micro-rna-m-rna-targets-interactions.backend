@@ -28,3 +28,6 @@ class Configurator:
       
     def get_path_prefix_of_dataset_location(self):
         return self.parser['DATASETS']['path_prefix_of_dataset_location']
+    
+    def get_path_prefix_to_save_new_csv(self):
+        return self.parser['DATASETS']['path_prefix_to_save_new_csv']
