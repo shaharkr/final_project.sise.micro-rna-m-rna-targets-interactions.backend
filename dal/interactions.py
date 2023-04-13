@@ -54,7 +54,8 @@ def get_interactions_gneral_search(query_string):
 def create_interactions_list(results):
     interactions = []
     for interaction in results:
-            interactions.append({"index": interaction.index,
+            interactions.append({"interactionId": interaction.id,
+                                "index": interaction.index,
                                 "datasetId": interaction.data_set_id,
                                 "miRnaId": interaction.mirna_id,
                                 "miRnaSeq": interaction.mirna_sequence,
