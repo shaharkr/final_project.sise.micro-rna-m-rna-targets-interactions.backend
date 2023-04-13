@@ -28,7 +28,7 @@ def get_interactions(data_sets_ids, seed_families, mirna_ids,
 
 
 @cache.memoize(timeout=12000)
-def get_interactions_gneral_search(query_string):
+def get_interactions_general_search(query_string):
     interactions = []
     if query_string is None or query_string == '':
         return interactions
