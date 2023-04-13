@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+import json
 
 class Configurator:
     def __init__(self):
@@ -17,9 +18,16 @@ class Configurator:
     def get_mode(self):
         return self.parser['ENV']['mode']
     
+    def get_ensambl_url(self):
+        return self.parser['PARAMETERS']['ensambl_url']
+    
+    def get_ensamble_organisms_names_dict(self):
+        dict_str = self.parser['PARAMETERS']['ensambl_orgs_names_dict']
+        to_ret = json.loads(dict_str)
+        return to_ret
+      
     def get_path_prefix_of_dataset_location(self):
         return self.parser['DATASETS']['path_prefix_of_dataset_location']
     
     def get_path_prefix_to_save_new_csv(self):
         return self.parser['DATASETS']['path_prefix_to_save_new_csv']
-    

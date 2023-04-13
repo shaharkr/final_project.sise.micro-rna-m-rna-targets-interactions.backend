@@ -8,4 +8,5 @@ flask_executor
 flask-compress
 waitress
 Flask-Caching
+jason
 jsonify

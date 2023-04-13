@@ -29,7 +29,7 @@ init_db_connector(app)
 def hello_world():
     to_ret = {
         'status': 'ok',
-        'value': 'Hello from micro-message RNA project!'
+        'value': 'Hello from micro-message RNA project!@'
     }
     return jsonify(to_ret)
 
@@ -143,6 +143,16 @@ def get_general_search_data():
         print(f'app failed to get general interactions. error: {str(e)}')
     return response
     
+
+@app.route('/api/interactionOuterData/<int:interaction_id>', methods=['GET'])
+def get_interaction_data(interaction_id):
+    interaction_id_data_result = []
+    try:
+        interaction_id_data_result = interactions.get_interaction_id_data(interaction_id)
+    except Exception as e:
+        print(f'app failed to get interaction id data. error: {str(e)}')
+    return interaction_id_data_result
+
 
 if __name__ == '__main__':
     confg = Configurator()
