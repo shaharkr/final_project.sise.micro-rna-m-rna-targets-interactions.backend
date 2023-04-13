@@ -91,7 +91,7 @@ def get_general_interactions():
     interactions_result = []
     try:
         query_string = request.args.get('q')
-        interactions_result = interactions.get_interactions_gneral_search(query_string)
+        interactions_result = interactions.get_interactions_general_search(query_string)
     except Exception as e:
         print(f'app failed to get general interactions. error: {str(e)}')
     return interactions_result
@@ -100,7 +100,7 @@ def get_general_interactions():
 def get_full_data_set(data_set_id):
     response = None
     try:
-        response = download.download_data(data_set_id, path=None)
+        response = download.download_data(data_set_id=data_set_id)
     except Exception as e:
         print(f'app failed to get general interactions. error: {str(e)}')
     return response
@@ -117,12 +117,11 @@ def get_search_data():
         sites = request.args.getlist('sites')
         gene_ids = request.args.getlist('geneIds')
         regions = request.args.getlist('regions')
-        cur_file_num = download.delete_old_files_and_set_new_counter_in_config()
         file_path = download.get_interactions_for_download(data_sets_ids, seed_families, 
                                                            mirna_ids, mirna_seqs, sites, 
-                                                           gene_ids, regions, cur_file_num)
+                                                           gene_ids, regions)
         if file_path:
-            response = download.download_data(data_set_id=-1, path=file_path)
+            response = download.download_data(file_path=file_path)
         else:
             return None
     except Exception as e:
@@ -134,11 +133,10 @@ def get_general_search_data():
     response = None
     file_path = None
     try:
-        query = request.args.getlist('q')
-        file_name = download.get_unique_file_name()
-        file_path = download.get_interactions_gneral_search_for_download(query, file_name)
+        query = request.args.get('q')
+        file_path = download.get_interactions_general_search_for_download(query)
         if file_path:
-            response = download.download_data(data_set_id=-1, path=file_path)
+            response = download.download_data(file_path=file_path)
         else:
             return None
     except Exception as e:

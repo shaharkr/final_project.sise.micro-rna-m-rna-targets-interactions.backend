@@ -9,7 +9,7 @@ from sqlalchemy import or_
 
 @cache.memoize(timeout=12000)
 def get_interactions_for_download(data_sets_ids, seed_families, mirna_ids,
-                     mirna_seqs, sites, gene_ids, regions, cur_file_num):
+                     mirna_seqs, sites, gene_ids, regions):
     interactions = None
     try:
         filters = [Interaction.data_set_id.in_(data_sets_ids) if data_sets_ids else True,
@@ -20,13 +20,16 @@ def get_interactions_for_download(data_sets_ids, seed_families, mirna_ids,
            Interaction.Gene_ID.in_(gene_ids) if gene_ids else True,
            Interaction.region.in_(regions) if regions else True]
         interactions = Interaction.query.filter(*filters).all()
-        file_path = create_csv_from_search(interactions, cur_file_num)
+        if len(interactions) != 0 or interactions == None: 
+            file_name = get_unique_file_name()
+            file_path = create_csv_from_search(interactions, file_name)
     except Exception as e:
         print(f'dal failed to get interactions. error: {str(e)}')
     return file_path
 
+
 @cache.memoize(timeout=12000)
-def get_interactions_gneral_search_for_download(query_string, file_name):
+def get_interactions_general_search_for_download(query_string):
     interactions = []
     if query_string is None or query_string == '':
         return interactions
@@ -43,43 +46,42 @@ def get_interactions_gneral_search_for_download(query_string, file_name):
             Interaction.mir_bulge.like(f'%{query_string}%'),
             Interaction.Gene_ID.like(f'%{query_string}%')
         )).all()
-        file_path = create_csv_from_search(interactions, file_name)
+        if len(interactions) != 0 or interactions == None:
+            file_name = get_unique_file_name()
+            file_path = create_csv_from_search(interactions, file_name)
     except Exception as e:
         print(f'dal failed to get general interactions. error: {str(e)}')
     return file_path
 
+
 def create_csv_from_search(interactions, file_name):
     # Check if the interactions list is not empty
-    if interactions:
-        try:
-            # Set the file name and location
-            path_prefix = Configurator().get_path_prefix_to_save_new_csv()
-            file_path = f"{path_prefix}\\temp_{file_name}.csv"
-            # Open the file in write mode and create a CSV writer object
-            with open(file_path, mode='w', newline='') as csv_file:
-                writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                # Write the header row
-                writer.writerow(['index', 'datasetId', 'miRnaSeq', 'seedFamily', 'site', 'region', 'start', 'end', 'mrnaBulge', 
-                                'mrnaInter', 'mirInter', 'mirBulge', 'energyMefDuplex', 'geneId'])
-                # Loop through the interactions and write each row to the CSV file
-                for interaction in interactions:
-                    writer.writerow([interaction.index, interaction.data_set_id, interaction.mirna_sequence, interaction.seed_family, 
-                                    interaction.site, interaction.region, interaction.start, interaction.end, interaction.mrna_bulge, 
-                                    interaction.mrna_inter, interaction.mir_inter, interaction.mir_bulge, interaction.Energy_MEF_Duplex, 
-                                    interaction.Gene_ID])
+    try:
+        # Set the file name and location
+        path_prefix = Configurator().get_path_prefix_to_save_new_csv()
+        file_path = f"{path_prefix}\\temp_{file_name}.csv"
+        # Open the file in write mode and create a CSV writer object
+        with open(file_path, mode='w', newline='') as csv_file:
+            writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            # Write the header row
+            writer.writerow(['index', 'datasetId', 'miRnaSeq', 'seedFamily', 'site', 'region', 'start', 'end', 'mrnaBulge', 
+                            'mrnaInter', 'mirInter', 'mirBulge', 'energyMefDuplex', 'geneId'])
+            # Loop through the interactions and write each row to the CSV file
+            for interaction in interactions:
+                writer.writerow([interaction.index, interaction.data_set_id, interaction.mirna_sequence, interaction.seed_family, 
+                                interaction.site, interaction.region, interaction.start, interaction.end, interaction.mrna_bulge, 
+                                interaction.mrna_inter, interaction.mir_inter, interaction.mir_bulge, interaction.Energy_MEF_Duplex, 
+                                interaction.Gene_ID])
             return file_path
-        except Exception as e:
-            print(f'dal failed to get interactions. error: {str(e)}')
-        
-    else:
-        print('Interactions list is empty.')
+    except Exception as e:
+        print(f'dal failed to get interactions. error: {str(e)}')
 
+        
 # if path=None - download a whole dataset
-def download_data(data_set_id, path):
+def download_data(data_set_id=None, file_path=None):
     # set the file path and content type
-    file_path = path
     file_name = "search_data"
-    if not path:
+    if file_path is None:
         path_prefix = Configurator().get_path_prefix_of_dataset_location()
         data_set = DataSet.query.filter_by(id=data_set_id).all()
         file_name = data_set[0].name
