@@ -89,16 +89,16 @@ def create_interaction_outer_data_object(interaction_id_data):
     mi_rna_data_dict = {
             "miRnaId": interaction_id_data.mirna_id,
             "miRnaSequence": interaction_id_data.mirna_sequence,
-            "seedFamily": interaction_id_data.seed_family,
-            "start": interaction_id_data.start,
-            "end": interaction_id_data.end
+            "seedFamily": interaction_id_data.seed_family
         }
     sequence_url = create_sequence_url(interaction_id_data.Gene_ID, interaction_id_data.organism)
     m_rna_data_dict = {
             "region": interaction_id_data.region,
             "geneId": interaction_id_data.Gene_ID,
             "geneName": "temp name",  # TODO: need to add this column to DB
-            "sequenceUrl": sequence_url
+            "sequenceUrl": sequence_url,
+            "startSite": interaction_id_data.start,
+            "endSite": interaction_id_data.end
         }
     
     duplex_structure = create_duplex_structure(interaction_id_data.mrna_bulge,
