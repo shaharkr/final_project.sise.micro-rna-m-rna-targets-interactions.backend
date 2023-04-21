@@ -109,8 +109,8 @@ def create_interaction_outer_data_object(interaction_id_data):
             "geneId": interaction_id_data.Gene_ID,
             "geneName": "temp name",  # TODO: need to add this column to DB
             "sequenceUrl": sequence_url,
-            "startSite": interaction_id_data.start,
-            "endSite": interaction_id_data.end
+            "interStart": interaction_id_data.start,
+            "interEnd": interaction_id_data.end
         }
     
     duplex_structure = create_duplex_structure(interaction_id_data.mrna_bulge,
