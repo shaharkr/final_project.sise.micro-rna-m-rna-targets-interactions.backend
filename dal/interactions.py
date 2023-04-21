@@ -10,16 +10,28 @@ from configurator import Configurator
 
 @cache.memoize(timeout=12000)
 def get_interactions(data_sets_ids, seed_families, mirna_ids,
-                     mirna_seqs, sites, gene_ids, regions):
+                     mirna_seqs, site_types, gene_ids, regions):
     interactions = []
     try:
         filters = [Interaction.data_set_id.in_(data_sets_ids) if data_sets_ids else True,
-           Interaction.seed_family.in_(seed_families) if seed_families else True,
-           Interaction.mirna_id.in_(mirna_ids) if mirna_ids else True,
-           Interaction.mirna_sequence.in_(mirna_seqs) if mirna_seqs else True,
-           Interaction.site.in_(sites) if sites else True,
-           Interaction.Gene_ID.in_(gene_ids) if gene_ids else True,
-           Interaction.region.in_(regions) if regions else True]
+                  Interaction.seed_family.in_(seed_families) if seed_families else True,
+                  Interaction.mirna_id.in_(mirna_ids) if mirna_ids else True,
+                  Interaction.mirna_sequence.in_(mirna_seqs) if mirna_seqs else True,
+                  Interaction.Gene_ID.in_(gene_ids) if gene_ids else True,
+                  Interaction.region.in_(regions) if regions else True]
+        site_types_filters = None
+        if site_types:
+            site_types_filters = []
+            if 'canonical' in site_types:
+                site_types_filters.append(Interaction.Seed_match_canonical == True)
+            if 'noncanonical' in site_types:
+                site_types_filters.append(Interaction.Seed_match_noncanonical == True)
+            if 'other' in site_types:
+                site_types_filters.append(and_(
+                    Interaction.Seed_match_canonical == False,
+                    Interaction.Seed_match_noncanonical == False
+                ))
+            filters.append(or_(*site_types_filters))
         results = Interaction.query.filter(*filters).limit(750).all()
         interactions = create_interactions_list(results)
     except Exception as e:
@@ -89,22 +101,27 @@ def create_interaction_outer_data_object(interaction_id_data):
     mi_rna_data_dict = {
             "miRnaId": interaction_id_data.mirna_id,
             "miRnaSequence": interaction_id_data.mirna_sequence,
-            "seedFamily": interaction_id_data.seed_family,
-            "start": interaction_id_data.start,
-            "end": interaction_id_data.end
+            "seedFamily": interaction_id_data.seed_family
         }
     sequence_url = create_sequence_url(interaction_id_data.Gene_ID, interaction_id_data.organism)
     m_rna_data_dict = {
             "region": interaction_id_data.region,
             "geneId": interaction_id_data.Gene_ID,
             "geneName": "temp name",  # TODO: need to add this column to DB
-            "sequenceUrl": sequence_url
+            "sequenceUrl": sequence_url,
+            "interStart": interaction_id_data.start,
+            "interEnd": interaction_id_data.end
         }
     
     duplex_structure = create_duplex_structure(interaction_id_data.mrna_bulge,
                                                interaction_id_data.mrna_inter,
                                                interaction_id_data.mir_inter,
                                                interaction_id_data.mir_bulge)
+    site_type = "other"
+    if interaction_id_data.Seed_match_noncanonical:
+        site_type = "noncanonical"
+    elif interaction_id_data.Seed_match_canonical:
+        site_type = "canonical"
     interaction_inner_data_dict = {
             "interactionId": interaction_id_data.id,
             "organismName": interaction_id_data.organism,
@@ -113,9 +130,8 @@ def create_interaction_outer_data_object(interaction_id_data):
             "energyMefDuplex": interaction_id_data.Energy_MEF_Duplex,
             "mRnaDistToEnd": interaction_id_data.MRNA_Dist_to_end,
             "mRnaDistToStart": interaction_id_data.MRNA_Dist_to_start,
-            "seedMatchCanonical": interaction_id_data.Seed_match_canonical,
-            "seedMatchNonCanonical": interaction_id_data.Seed_match_noncanonical,
-            "seedMatchStart": interaction_id_data.Seed_match_start
+            "seedMatchStart": interaction_id_data.Seed_match_start,
+            "siteType": site_type
         }
     
     interaction_outer_data_object = {
