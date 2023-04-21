@@ -27,7 +27,7 @@ def get_data_sets(with_options=False):
                                         "name": data_set.name,
                                         "interactionsAmount": data_set.interactions_amount,
                                         "datasetMB": data_set.data_set_mb,
-                                        "searchOptions": {"seedFamilies": [], "miRnaIds": [], "sites": [],
+                                        "searchOptions": {"seedFamilies": [], "miRnaIds": [], "siteTypes": ["canonical", "noncanonical", "other"],
                                                           "geneIds": [], "regions": []},
                                         "organism" : data_set.organism}
     if with_options:
