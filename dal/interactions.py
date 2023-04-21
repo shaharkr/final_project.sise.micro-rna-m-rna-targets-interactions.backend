@@ -10,16 +10,28 @@ from configurator import Configurator
 
 @cache.memoize(timeout=12000)
 def get_interactions(data_sets_ids, seed_families, mirna_ids,
-                     mirna_seqs, sites, gene_ids, regions):
+                     mirna_seqs, site_types, gene_ids, regions):
     interactions = []
     try:
         filters = [Interaction.data_set_id.in_(data_sets_ids) if data_sets_ids else True,
-           Interaction.seed_family.in_(seed_families) if seed_families else True,
-           Interaction.mirna_id.in_(mirna_ids) if mirna_ids else True,
-           Interaction.mirna_sequence.in_(mirna_seqs) if mirna_seqs else True,
-           Interaction.site.in_(sites) if sites else True,
-           Interaction.Gene_ID.in_(gene_ids) if gene_ids else True,
-           Interaction.region.in_(regions) if regions else True]
+                  Interaction.seed_family.in_(seed_families) if seed_families else True,
+                  Interaction.mirna_id.in_(mirna_ids) if mirna_ids else True,
+                  Interaction.mirna_sequence.in_(mirna_seqs) if mirna_seqs else True,
+                  Interaction.Gene_ID.in_(gene_ids) if gene_ids else True,
+                  Interaction.region.in_(regions) if regions else True]
+        site_types_filters = None
+        if site_types:
+            site_types_filters = []
+            if 'canonical' in site_types:
+                site_types_filters.append(Interaction.Seed_match_canonical == True)
+            if 'noncanonical' in site_types:
+                site_types_filters.append(Interaction.Seed_match_noncanonical == True)
+            if 'other' in site_types:
+                site_types_filters.append(and_(
+                    Interaction.Seed_match_canonical == False,
+                    Interaction.Seed_match_noncanonical == False
+                ))
+            filters.append(or_(*site_types_filters))
         results = Interaction.query.filter(*filters).limit(750).all()
         interactions = create_interactions_list(results)
     except Exception as e:
