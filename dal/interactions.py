@@ -117,6 +117,11 @@ def create_interaction_outer_data_object(interaction_id_data):
                                                interaction_id_data.mrna_inter,
                                                interaction_id_data.mir_inter,
                                                interaction_id_data.mir_bulge)
+    site_type = "other"
+    if interaction_id_data.Seed_match_noncanonical:
+        site_type = "noncanonical"
+    elif interaction_id_data.Seed_match_canonical:
+        site_type = "canonical"
     interaction_inner_data_dict = {
             "interactionId": interaction_id_data.id,
             "organismName": interaction_id_data.organism,
@@ -125,9 +130,8 @@ def create_interaction_outer_data_object(interaction_id_data):
             "energyMefDuplex": interaction_id_data.Energy_MEF_Duplex,
             "mRnaDistToEnd": interaction_id_data.MRNA_Dist_to_end,
             "mRnaDistToStart": interaction_id_data.MRNA_Dist_to_start,
-            "seedMatchCanonical": interaction_id_data.Seed_match_canonical,
-            "seedMatchNonCanonical": interaction_id_data.Seed_match_noncanonical,
-            "seedMatchStart": interaction_id_data.Seed_match_start
+            "seedMatchStart": interaction_id_data.Seed_match_start,
+            "siteType": site_type
         }
     
     interaction_outer_data_object = {
