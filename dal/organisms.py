@@ -3,6 +3,21 @@ from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, Region
 from dal.db_connection import Interaction
 from dal.interactions import create_interactions_list
 
+
+@cache.memoize(timeout=12000)
+def get_organisms_details_with_features(with_options=False):
+    orgs = get_organisms(with_options=with_options)
+    features = get_features_details()
+    features_types = [{"id": 0,
+                        "type": "numeric",
+                        "filters": ["equel to", "greater than", "less than"]
+                        },
+                      {"id": 1,
+                        "type": "boolean",
+                        "filters": ["True", "False"]
+                        }]
+    return {"organisms": orgs, "features": features, "featureTypes": features_types}
+
 @cache.memoize(timeout=12000)
 def get_organisms(with_options=False):
     data_sets_dict = get_data_sets(with_options)
@@ -93,3 +108,11 @@ def get_data_set_interactions(data_set_id):
     except Exception as e:
         print(f'dal failed to get interactions of data set id- {data_set_id}. error: {str(e)}')
     return interactions
+
+
+def get_features_details():
+    features_details = [{"name": "miRNAPairingCount_X3p_mismatch",
+      "featureTypeId": 2},
+     {"name": "Energy_MEF_local_target",
+      "featureTypeId": 1}]
+    return features_details

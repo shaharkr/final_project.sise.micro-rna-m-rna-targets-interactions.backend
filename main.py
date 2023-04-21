@@ -53,7 +53,7 @@ def get_organisms_details():
         print('searchOptions is null or not set properly (as true or flase)')
         with_search_options = False
     try:
-        organisms_list = organisms.get_organisms(with_options=with_search_options)
+        organisms_list = organisms.get_organisms_details_with_features(with_options=with_search_options)
     except Exception as e:
         print(f'app failed to get organisms. error: {str(e)}')
     return organisms_list
