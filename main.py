@@ -53,7 +53,7 @@ def get_organisms_details():
         print('searchOptions is null or not set properly (as true or flase)')
         with_search_options = False
     try:
-        organisms_list = organisms.get_organisms(with_options=with_search_options)
+        organisms_list = organisms.get_organisms_details_with_features(with_options=with_search_options)
     except Exception as e:
         print(f'app failed to get organisms. error: {str(e)}')
     return organisms_list
@@ -77,10 +77,10 @@ def get_interactions():
         seed_families = request.args.getlist('seedFamilies')
         mirna_ids = request.args.getlist('miRnaIds')
         mirna_seqs = request.args.getlist('miRnaSeqs')
-        sites = request.args.getlist('sites')
+        site_types = request.args.getlist('siteTypes')
         gene_ids = request.args.getlist('geneIds')
         regions = request.args.getlist('regions')
-        interactions_result = interactions.get_interactions(data_sets_ids, seed_families, mirna_ids, mirna_seqs, sites, gene_ids, regions)
+        interactions_result = interactions.get_interactions(data_sets_ids, seed_families, mirna_ids, mirna_seqs, site_types, gene_ids, regions)
     except Exception as e:
         print(f'app failed to get interactions. error: {str(e)}')
     return interactions_result
