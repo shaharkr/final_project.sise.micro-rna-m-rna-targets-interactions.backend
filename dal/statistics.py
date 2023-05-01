@@ -22,6 +22,10 @@ def update_general_stats():
                               num_of_3utr_interactions=num_of_3utr_interactions)
     db.session.add(general_stats)
     db.session.commit()
+    if db.session.query(General_stats).count() > 1:
+        row_to_delete = General_stats.query.first()
+        db.session.delete(row_to_delete)
+        db.session.commit()
 
 
 @cache.memoize(timeout=12000)
