@@ -1,5 +1,6 @@
 from dal.db_connection import cache, db
 from dal.db_connection import Interaction, DataSet
+from dal import interactions
 from flask import Response, stream_with_context
 import csv
 from configurator import Configurator
@@ -9,20 +10,14 @@ from sqlalchemy import or_
 
 @cache.memoize(timeout=12000)
 def get_interactions_for_download(data_sets_ids, seed_families, mirna_ids,
-                     mirna_seqs, sites, gene_ids, regions):
-    interactions = None
+                     mirna_seqs, site_types, gene_ids, regions):
+    results = None
     try:
-        filters = [Interaction.data_set_id.in_(data_sets_ids) if data_sets_ids else True,
-           Interaction.seed_family.in_(seed_families) if seed_families else True,
-           Interaction.mirna_id.in_(mirna_ids) if mirna_ids else True,
-           Interaction.mirna_sequence.in_(mirna_seqs) if mirna_seqs else True,
-           Interaction.site.in_(sites) if sites else True,
-           Interaction.Gene_ID.in_(gene_ids) if gene_ids else True,
-           Interaction.region.in_(regions) if regions else True]
-        interactions = Interaction.query.filter(*filters).all()
-        if len(interactions) != 0 or interactions == None: 
+        results = interactions.get_interactions_query(True, data_sets_ids, seed_families, mirna_ids,
+                mirna_seqs, site_types, gene_ids, regions)
+        if len(results) != 0 or results == None: 
             file_name = get_unique_file_name()
-            file_path = create_csv_from_search(interactions, file_name)
+            file_path = create_csv_from_search(results, file_name)
     except Exception as e:
         print(f'dal failed to get interactions. error: {str(e)}')
     return file_path
@@ -30,25 +25,14 @@ def get_interactions_for_download(data_sets_ids, seed_families, mirna_ids,
 
 @cache.memoize(timeout=12000)
 def get_interactions_general_search_for_download(query_string):
-    interactions = []
+    results = []
     if query_string is None or query_string == '':
         return interactions
     try:
-        interactions = db.session.query(Interaction).filter(or_(
-            Interaction.mirna_id.like(f'%{query_string}%'),
-            Interaction.mirna_sequence.like(f'%{query_string}%'),
-            Interaction.seed_family.like(f'%{query_string}%'),
-            Interaction.site.like(f'%{query_string}%'),
-            Interaction.region.like(f'%{query_string}%'),
-            Interaction.mrna_bulge.like(f'%{query_string}%'),
-            Interaction.mrna_inter.like(f'%{query_string}%'),
-            Interaction.mir_inter.like(f'%{query_string}%'),
-            Interaction.mir_bulge.like(f'%{query_string}%'),
-            Interaction.Gene_ID.like(f'%{query_string}%')
-        )).all()
-        if len(interactions) != 0 or interactions == None:
+        results = interactions.get_interactions_general_search_query(True, query_string)
+        if len(results) != 0 or results == None:
             file_name = get_unique_file_name()
-            file_path = create_csv_from_search(interactions, file_name)
+            file_path = create_csv_from_search(results, file_name)
     except Exception as e:
         print(f'dal failed to get general interactions. error: {str(e)}')
     return file_path

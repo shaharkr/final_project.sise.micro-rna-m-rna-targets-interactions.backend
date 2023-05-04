@@ -1,17 +1,12 @@
 from dal.db_connection import db, cache
 from dal.db_connection import Interaction, DataSet
 from sqlalchemy import or_, and_
-from sqlalchemy import text
-from flask import Response, stream_with_context
-import io
-import csv
 from configurator import Configurator
 
 
-@cache.memoize(timeout=12000)
-def get_interactions(data_sets_ids, seed_families, mirna_ids,
+def get_interactions_query(all_rows, data_sets_ids, seed_families, mirna_ids,
                      mirna_seqs, site_types, gene_ids, regions):
-    interactions = []
+    results = []
     try:
         filters = [Interaction.data_set_id.in_(data_sets_ids) if data_sets_ids else True,
                   Interaction.seed_family.in_(seed_families) if seed_families else True,
@@ -32,7 +27,58 @@ def get_interactions(data_sets_ids, seed_families, mirna_ids,
                     Interaction.Seed_match_noncanonical == False
                 ))
             filters.append(or_(*site_types_filters))
-        results = Interaction.query.filter(*filters).limit(750).all()
+        if all_rows:
+            results = Interaction.query.filter(*filters).all()
+        else:
+            results = Interaction.query.filter(*filters).limit(750).all()
+        return results
+    except Exception as e:
+        print(f'dal failed to get interactions. error: {str(e)}')
+
+    
+def get_interactions_general_search_query(all_rows, query_string):
+    interactions = []
+    if query_string is None or query_string == '':
+        return interactions
+    try:
+        if all_rows:
+            interactions = db.session.query(Interaction).filter(or_(
+                Interaction.mirna_id.like(f'%{query_string}%'),
+                Interaction.mirna_sequence.like(f'%{query_string}%'),
+                Interaction.seed_family.like(f'%{query_string}%'),
+                Interaction.site.like(f'%{query_string}%'),
+                Interaction.region.like(f'%{query_string}%'),
+                Interaction.mrna_bulge.like(f'%{query_string}%'),
+                Interaction.mrna_inter.like(f'%{query_string}%'),
+                Interaction.mir_inter.like(f'%{query_string}%'),
+                Interaction.mir_bulge.like(f'%{query_string}%'),
+                Interaction.Gene_ID.like(f'%{query_string}%')
+            )).all()
+        else:
+            interactions = db.session.query(Interaction).filter(or_(
+            Interaction.mirna_id.like(f'%{query_string}%'),
+            Interaction.mirna_sequence.like(f'%{query_string}%'),
+            Interaction.seed_family.like(f'%{query_string}%'),
+            Interaction.site.like(f'%{query_string}%'),
+            Interaction.region.like(f'%{query_string}%'),
+            Interaction.mrna_bulge.like(f'%{query_string}%'),
+            Interaction.mrna_inter.like(f'%{query_string}%'),
+            Interaction.mir_inter.like(f'%{query_string}%'),
+            Interaction.mir_bulge.like(f'%{query_string}%'),
+            Interaction.Gene_ID.like(f'%{query_string}%')
+        )).limit(750).all()
+        return interactions
+    except Exception as e:
+        print(f'dal failed to get general interactions. error: {str(e)}')
+
+
+@cache.memoize(timeout=12000)
+def get_interactions(data_sets_ids, seed_families, mirna_ids,
+                     mirna_seqs, site_types, gene_ids, regions):
+    interactions = []
+    try:
+        results = get_interactions_query(False, data_sets_ids, seed_families, mirna_ids,
+                     mirna_seqs, site_types, gene_ids, regions)
         interactions = create_interactions_list(results)
     except Exception as e:
         print(f'dal failed to get interactions. error: {str(e)}')
@@ -45,18 +91,7 @@ def get_interactions_general_search(query_string):
     if query_string is None or query_string == '':
         return interactions
     try:
-        results = db.session.query(Interaction).filter(or_(
-            Interaction.mirna_id.like(f'%{query_string}%'),
-            Interaction.mirna_sequence.like(f'%{query_string}%'),
-            Interaction.seed_family.like(f'%{query_string}%'),
-            Interaction.site.like(f'%{query_string}%'),
-            Interaction.region.like(f'%{query_string}%'),
-            Interaction.mrna_bulge.like(f'%{query_string}%'),
-            Interaction.mrna_inter.like(f'%{query_string}%'),
-            Interaction.mir_inter.like(f'%{query_string}%'),
-            Interaction.mir_bulge.like(f'%{query_string}%'),
-            Interaction.Gene_ID.like(f'%{query_string}%')
-        )).limit(750).all()
+        results = get_interactions_general_search_query(False, query_string)
         interactions = create_interactions_list(results)
     except Exception as e:
         print(f'dal failed to get general interactions. error: {str(e)}')
@@ -161,61 +196,3 @@ def create_sequence_url(gene_id, organism):
     url_string = confg.get_ensambl_url().format(organism_name=ensamble_org_name, gene_id=relevant_gene_id)
     return url_string
 
-  
-def download_search_data(data_set_id):
-    page_size = 10240
-    with db.engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM mirna_mrna_interactions WHERE data_set_id =" + str(data_set_id)))
-    
-    def generate():
-        offset = 0
-        rows = result.fetchmany(page_size)
-        csv_data = io.StringIO()
-        writer = csv.writer(csv_data)
-        writer.writerow([column[0] for column in result.cursor.description])
-        
-        while rows:
-            for row in rows:
-                writer.writerow(row)
-                data = csv_data.getvalue()
-                if len(data) > 10240: # if csv data exceeds 10KB
-                    yield data
-                    csv_data = io.StringIO() # reset the StringIO object
-                    writer = csv.writer(csv_data)
-                    writer.writerow([column[0] for column in result.cursor.description])
-            offset += page_size
-            rows = result.fetchmany(page_size)
-
-        yield csv_data.getvalue() # yield any remaining csv data
-        
-    content_type = 'text/csv'
-    return Response(stream_with_context(generate()), mimetype=content_type)
-
-
-def download_data(data_set_id, path):
-    # set the file path and content type
-    file_path = path
-    path_prefix = Configurator().get_path_prefix_of_dataset_location()
-    data_set = DataSet.query.filter_by(id=data_set_id).all()
-    file_name = data_set[0].name
-    if not path:
-        file_path = f"{path_prefix}\\{file_name}.csv"
-    content_type = 'text/csv'
-
-    # define a function that reads the file in 10KB chunks
-    def generate():
-        with open(file_path, 'rb') as f:
-            while True:
-                data = f.read(10240) # 10KB chunk size
-                if not data:
-                    break
-                yield data
-    
-    try:
-    # use the stream_with_context function to stream the response in chunks
-        response = Response(stream_with_context(generate()), mimetype=content_type)
-        response.headers['Content-Disposition'] = f'attachment; filename={file_name}.csv'
-        return response
-    except Exception as e:
-        print(f'app failed to get general interactions. error: {str(e)}')
-        return None
