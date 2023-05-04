@@ -132,4 +132,15 @@ class Interaction(db.Model):
         return f"<Interaction: index-{self.index}, data_set_id-{self.data_set_id}>"
 
 
-
+class GeneralStats(db.Model):
+    __tablename__ = 'general_stats'
+    id = db.Column(db.Integer, primary_key=True)
+    num_of_organisms = db.Column(db.Integer)
+    num_of_datasets = db.Column(db.Integer)
+    num_of_mirna = db.Column(db.Integer)
+    num_of_mrna = db.Column(db.Integer)
+    num_of_interactions = db.Column(db.Integer)
+    num_of_3utr_interactions = db.Column(db.Integer)
+    
+    def __repr__(self):
+        return f"<general stats: num_of_organisms-{self.num_of_organisms}, num_of_datasets-{self.num_of_datasets}, num_of_mirna-{self.num_of_mirna}, num_of_mrna-{self.num_of_mrna} , num_of_interactions-{self.num_of_interactions}, num_of_3utr_interactions-{self.num_of_3utr_interactions}>"
