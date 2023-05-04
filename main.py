@@ -5,6 +5,7 @@ import dal.organisms as organisms
 from flask_compress import Compress
 import dal.interactions as interactions
 import dal.download as download
+import dal.statistics as statistics
 from configurator import Configurator
 from waitress import serve
 
@@ -152,6 +153,26 @@ def get_interaction_data(interaction_id):
     except Exception as e:
         print(f'app failed to get interaction id data. error: {str(e)}')
     return interaction_id_data_result
+
+
+@app.route('/api/statistics/general', methods=['GET'])
+def get_general_stats_info():
+    stats = []
+    try:
+        stats = statistics.get_general_stats()
+    except Exception as e:
+        print(f'app failed to get general stats. error: {str(e)}')
+    return stats
+
+
+@app.route('/api/statistics/update_general', methods=['GET'])
+def update_general_stats_info():
+    stats = []
+    try:
+        statistics.update_general_stats()
+    except Exception as e:
+        print(f'app failed to get general stats. error: {str(e)}')
+    return "Update succeeded"
 
 
 if __name__ == '__main__':
