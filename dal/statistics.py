@@ -1,4 +1,4 @@
-from dal.db_connection import General_stats, Interaction, DataSet, Organism
+from dal.db_connection import GeneralStats, Interaction, DataSet, Organism
 from dal.db_connection import db, cache
 from sqlalchemy import func, distinct
 import pandas as pd
@@ -14,7 +14,7 @@ def update_general_stats():
     num_of_mrna = len(df['Gene_ID_sub'].unique())
     num_of_interactions = db.session.query(Interaction).count()
     num_of_3utr_interactions = db.session.query(Interaction).filter(Interaction.region == "3utr").count()
-    general_stats = General_stats(num_of_organisms=num_of_organisms,
+    general_stats = GeneralStats(num_of_organisms=num_of_organisms,
                               num_of_datasets=num_od_datasets,
                               num_of_mirna=num_of_mirna,
                               num_of_mrna=num_of_mrna,
@@ -22,8 +22,8 @@ def update_general_stats():
                               num_of_3utr_interactions=num_of_3utr_interactions)
     db.session.add(general_stats)
     db.session.commit()
-    if db.session.query(General_stats).count() > 1:
-        row_to_delete = General_stats.query.first()
+    if db.session.query(GeneralStats).count() > 1:
+        row_to_delete = GeneralStats.query.first()
         db.session.delete(row_to_delete)
         db.session.commit()
 
@@ -31,7 +31,7 @@ def update_general_stats():
 @cache.memoize(timeout=12000)
 def get_general_stats():
     try:
-        stats = db.session.query(General_stats).all()
+        stats = db.session.query(GeneralStats).all()
         num_of_organisms = stats[0].num_of_organisms
         num_of_datasets = stats[0].num_of_datasets
         num_of_mirna = stats[0].num_of_mirna
