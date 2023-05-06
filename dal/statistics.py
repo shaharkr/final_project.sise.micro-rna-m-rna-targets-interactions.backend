@@ -40,12 +40,12 @@ def get_general_stats():
         num_of_3utr_interactions = stats[0].num_of_3utr_interactions
         result = {"featureName": "general_stats",
                 "statistics": {
-                    "num_of_organisms": num_of_organisms,
-                    "num_of_datasets": num_of_datasets,
-                    "num_of_mirna": num_of_mirna,
-                    "num_of_mrna": num_of_mrna,
-                    "num_of_interactions": num_of_interactions,
-                    "num_of_3utr_interactions": num_of_3utr_interactions
+                    "1organisms": num_of_organisms,
+                    "2datasets": num_of_datasets,
+                    "3mirna": num_of_mirna,
+                    "4mrna": num_of_mrna,
+                    "5interactions": num_of_interactions,
+                    "63utr interactions": num_of_3utr_interactions
                 }}
     except Exception as e:
         print(f'dal failed to get stats. error: {str(e)}')
