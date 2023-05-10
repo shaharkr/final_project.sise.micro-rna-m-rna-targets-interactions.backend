@@ -4,7 +4,9 @@ import json
 class Configurator:
     def __init__(self):
         self.parser = ConfigParser()
-        self.parser.read('config.ini')            
+        self.parser.read('config.ini')
+        self.statistic_parser = ConfigParser()
+        self.statistic_parser.read('statistics_config.ini')
     
     def get_db_url(self):
         host = self.parser['DATABASE']['host']
@@ -31,3 +33,29 @@ class Configurator:
     
     def get_path_prefix_to_save_new_csv(self):
         return self.parser['DATASETS']['path_prefix_to_save_new_csv']
+    
+    def convert_string_to_list_of_dicts(self, string):
+        # Convert the string to a list of dictionaries
+        try:
+            # Parse the string as JSON
+            data = json.loads(string)
+            
+            # Ensure that the parsed data is a list
+            if isinstance(data, list):
+                # Check if each item in the list is a dictionary
+                if all(isinstance(item, dict) for item in data):
+                    return data
+                else:
+                    raise ValueError("The input string does not represent a list of dictionaries.")
+            else:
+                raise ValueError("The input string does not represent a list.")
+        except json.JSONDecodeError:
+            raise ValueError("Invalid string format or invalid JSON.")
+    
+    def get_statistic_features_details(self):
+        data = self.statistic_parser['DETAILS']['features_details']
+        return self.convert_string_to_list_of_dicts(data)
+    
+    def get_features_types(self):
+        data = self.statistic_parser['DETAILS']['features_types']
+        return self.convert_string_to_list_of_dicts(data)

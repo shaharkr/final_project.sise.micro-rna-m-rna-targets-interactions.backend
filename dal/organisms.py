@@ -2,20 +2,14 @@ from dal.db_connection import DataSet, db, executor, cache
 from dal.db_connection import SeedFamilyOption, SiteOption, GeneIdOption, RegionOption, mirnaIdOption
 from dal.db_connection import Interaction
 from dal.interactions import create_interactions_list
+from configurator import Configurator
 
 
 @cache.memoize(timeout=12000)
 def get_organisms_details_with_features(with_options=False):
     orgs = get_organisms(with_options=with_options)
     features = get_features_details()
-    features_types = [{"id": 0,
-                        "type": "numeric",
-                        "filters": ["equel to", "greater than", "less than"]
-                        },
-                      {"id": 1,
-                        "type": "boolean",
-                        "filters": ["True", "False"]
-                        }]
+    features_types = Configurator().get_features_types()
     return {"organisms": orgs, "features": features, "featureTypes": features_types}
 
 @cache.memoize(timeout=12000)
@@ -111,8 +105,5 @@ def get_data_set_interactions(data_set_id):
 
 
 def get_features_details():
-    features_details = [{"name": "miRNAPairingCount_X3p_mismatch",
-      "featureTypeId": 2},
-     {"name": "Energy_MEF_local_target",
-      "featureTypeId": 1}]
+    features_details = Configurator().get_statistic_features_details()
     return features_details

@@ -167,12 +167,32 @@ def get_general_stats_info():
 
 @app.route('/api/statistics/update_general', methods=['GET'])
 def update_general_stats_info():
-    stats = []
     try:
         statistics.update_general_stats()
     except Exception as e:
         print(f'app failed to get general stats. error: {str(e)}')
     return "Update succeeded"
+
+
+@app.route('/api/statistics/oneD', methods=['GET'])
+def get_on_d_statistic():
+    one_d_statistics = {}
+    try:
+        data_sets_ids = request.args.getlist('datasetsIds')
+        seed_families = request.args.getlist('seedFamilies')
+        mirna_ids = request.args.getlist('miRnaIds')
+        mirna_seqs = request.args.getlist('miRnaSeqs')
+        site_types = request.args.getlist('siteTypes')
+        gene_ids = request.args.getlist('geneIds')
+        regions = request.args.getlist('regions')
+        feature_name = request.args.get('feature')
+        one_d_statistics = statistics.get_one_d(data_sets_ids, seed_families,
+                                                mirna_ids, mirna_seqs,
+                                                site_types, gene_ids,
+                                                regions, feature_name)
+    except Exception as e:
+        print(f'app failed to get general stats. error: {str(e)}')
+    return one_d_statistics
 
 
 if __name__ == '__main__':
