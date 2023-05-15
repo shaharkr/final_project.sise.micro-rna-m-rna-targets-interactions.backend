@@ -2,6 +2,7 @@ from dal.db_connection import GeneralStats, Interaction, DataSet, Organism
 from dal.db_connection import db, cache
 from sqlalchemy import func, distinct, text
 import pandas as pd
+from configurator import Configurator
 
 
 def update_general_stats():
@@ -91,27 +92,34 @@ def get_query_string_for_one_d(data_sets_ids, seed_families, mirna_ids, mirna_se
     q = f"{select_string}{where_cond_string}{group_by_string}"
     return q
 
+def get_top_20_dict(statistics_dict):
+    if len(statistics_dict) < 20:
+        return statistics_dict
+    sorted_dict = dict(sorted(statistics_dict.items(), key=lambda x: x[1], reverse=True))  # Sort the dictionary by values in descending order
+    top_20_dict = dict(list(sorted_dict.items())[:20])  # Get the top 20 elements and their corresponding values
+    other_sum = sum(list(sorted_dict.values())[20:])  # Calculate the sum of the values for the remaining elements
+    top_20_dict['others'] = other_sum  # Add the 'remaining_sum' key to the dictionary
+    return top_20_dict
+
 
 @cache.memoize(timeout=12000)
 def get_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
-              site_types, gene_ids, regions, feature_name):
-    query = text(get_query_string_for_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
-                                            site_types, gene_ids, regions, feature_name))
+              site_types, gene_ids, regions, feature_name, text_query=None):
+    if text_query is None:
+        text_query = get_query_string_for_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+                                                site_types, gene_ids, regions, feature_name)
+    query = text(text_query)
     try:
         result = db.session.execute(query)
         statistics = {}
-        n = 0
         for row in result:
             statistics[row.feature_values] = row.count
-            n =+ row.count
+        n = sum(list(statistics.values()))
         for k, v in statistics.items():
             statistics[k] = v/n  # convert count freq to %
         
         # get top 20
-        sorted_dict = dict(sorted(statistics.items(), key=lambda x: x[1], reverse=True))  # Sort the dictionary by values in descending order
-        top_20_dict = dict(list(sorted_dict.items())[:20])  # Get the top 20 elements and their corresponding values
-        other_sum = sum(list(sorted_dict.values())[20:])  # Calculate the sum of the values for the remaining elements
-        top_20_dict['others'] = other_sum  # Add the 'remaining_sum' key to the dictionary
+        top_20_dict = get_top_20_dict(statistics_dict=statistics)
         
         # convert keys to strings
         to_ret_dict = {}
@@ -121,3 +129,21 @@ def get_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs,
         return data
     except Exception as e:
         print(f'dal failed to get oneD statistics for {feature_name}. error: {str(e)}')
+
+
+def get_dataset_statistics(dataset_id):
+    try:
+        main_features_name_lst = Configurator().get_main_features_names()
+        main_features_back_to_front_names = Configurator().get_main_features_back_to_front_names()
+        data =[]
+        for feature_name in main_features_name_lst:
+            text_q = None
+            if feature_name == 'Gene_ID':
+                regex = "'([^|]+)'"
+                text_q = f'SELECT t."col" as feature_values, count(t."col") FROM (SELECT substring(mirna_mrna_interactions."{feature_name}" FROM {regex}) AS col FROM mirna_mrna_interactions WHERE data_set_id={dataset_id}) t GROUP BY t."col"'
+            feature_dist = get_one_d([str(dataset_id)], [], [], [], [], [], [], feature_name, text_q)
+            feature_dist["featureName"] = main_features_back_to_front_names[feature_dist["featureName"]]
+            data.append(feature_dist)
+        return data
+    except Exception as e:
+        print(f'dal failed to get dataset statistics for id {dataset_id}. error: {str(e)}')

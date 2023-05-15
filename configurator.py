@@ -59,3 +59,10 @@ class Configurator:
     def get_features_types(self):
         data = self.statistic_parser['DETAILS']['features_types']
         return self.convert_string_to_list_of_dicts(data)
+    
+    def get_main_features_names(self):
+        return eval(self.statistic_parser['FEATURES']['main_features_names_list'])
+    
+    def get_main_features_back_to_front_names(self):
+        dict_str = self.statistic_parser['FEATURES']['main_features_back_to_front_names']
+        return json.loads(dict_str)

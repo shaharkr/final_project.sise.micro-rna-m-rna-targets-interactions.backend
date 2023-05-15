@@ -175,7 +175,7 @@ def update_general_stats_info():
 
 
 @app.route('/api/statistics/oneD', methods=['GET'])
-def get_on_d_statistic():
+def get_one_d_statistic():
     one_d_statistics = {}
     try:
         data_sets_ids = request.args.getlist('datasetsIds')
@@ -190,6 +190,15 @@ def get_on_d_statistic():
                                                 mirna_ids, mirna_seqs,
                                                 site_types, gene_ids,
                                                 regions, feature_name)
+    except Exception as e:
+        print(f'app failed to get general stats. error: {str(e)}')
+    return one_d_statistics
+
+
+@app.route('/api/statistics/<int:dataset_id>', methods=['GET'])
+def get_dataset_statistic(dataset_id):
+    try:
+        one_d_statistics = statistics.get_dataset_statistics(dataset_id)
     except Exception as e:
         print(f'app failed to get general stats. error: {str(e)}')
     return one_d_statistics
