@@ -45,7 +45,7 @@ def get_general_stats():
                     "3miRNA": num_of_mirna,
                     "4mRNA": num_of_mrna,
                     "5Interactions": num_of_interactions,
-                    "63utr interactions": num_of_3utr_interactions
+                    "63utr Interactions": num_of_3utr_interactions
                 }}
     except Exception as e:
         print(f'dal failed to get stats. error: {str(e)}')
