@@ -40,11 +40,11 @@ def get_general_stats():
         num_of_3utr_interactions = stats[0].num_of_3utr_interactions
         result = {"featureName": "general_stats",
                 "statistics": {
-                    "1organisms": num_of_organisms,
-                    "2datasets": num_of_datasets,
-                    "3mirna": num_of_mirna,
-                    "4mrna": num_of_mrna,
-                    "5interactions": num_of_interactions,
+                    "1Organisms": num_of_organisms,
+                    "2Datasets": num_of_datasets,
+                    "3miRNA": num_of_mirna,
+                    "4mRNA": num_of_mrna,
+                    "5Interactions": num_of_interactions,
                     "63utr interactions": num_of_3utr_interactions
                 }}
     except Exception as e:
