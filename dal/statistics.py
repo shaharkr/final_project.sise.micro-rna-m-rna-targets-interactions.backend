@@ -92,14 +92,14 @@ def get_query_string_for_one_d(data_sets_ids, seed_families, mirna_ids, mirna_se
     q = f"{select_string}{where_cond_string}{group_by_string}"
     return q
 
-def get_top_20_dict(statistics_dict):
-    if len(statistics_dict) < 20:
+def get_top_n_dict(statistics_dict, n):
+    if len(statistics_dict) < n:
         return statistics_dict
     sorted_dict = dict(sorted(statistics_dict.items(), key=lambda x: x[1], reverse=True))  # Sort the dictionary by values in descending order
-    top_20_dict = dict(list(sorted_dict.items())[:20])  # Get the top 20 elements and their corresponding values
-    other_sum = sum(list(sorted_dict.values())[20:])  # Calculate the sum of the values for the remaining elements
-    top_20_dict['others'] = other_sum  # Add the 'remaining_sum' key to the dictionary
-    return top_20_dict
+    top_dict = dict(list(sorted_dict.items())[:n])  # Get the top 20 elements and their corresponding values
+    other_sum = sum(list(sorted_dict.values())[n:])  # Calculate the sum of the values for the remaining elements
+    top_dict['others'] = other_sum  # Add the 'remaining_sum' key to the dictionary
+    return top_dict
 
 
 @cache.memoize(timeout=12000)
@@ -119,11 +119,11 @@ def get_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs,
             statistics[k] = v/n  # convert count freq to %
         
         # get top 20
-        top_20_dict = get_top_20_dict(statistics_dict=statistics)
+        top_12_dict = get_top_n_dict(statistics_dict=statistics, n=12)
         
         # convert keys to strings
         to_ret_dict = {}
-        for k, v in top_20_dict.items():
+        for k, v in top_12_dict.items():
             to_ret_dict[str(k)] = v
         data = {"featureName": feature_name, "statistics": to_ret_dict}
         return data
