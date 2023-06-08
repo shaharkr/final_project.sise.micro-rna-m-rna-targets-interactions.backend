@@ -5,7 +5,7 @@ from dal.interactions import create_interactions_list
 from configurator import Configurator
 
 
-@cache.memoize(timeout=12000)
+@cache.memoize()
 def get_organisms_details_with_features(with_options=False):
     orgs = get_organisms(with_options=with_options)
     features = get_features_details()

@@ -210,6 +210,10 @@ if __name__ == '__main__':
     if mode == 'dev':
         app.run(debug=True, host='0.0.0.0', port=5000)
     else:
+        try:
+            organisms.get_organisms_details_with_features(with_options=True)
+        except Exception as e:
+            print(e)
         serve(app, host='0.0.0.0', port=5000, threads=50)
 
 

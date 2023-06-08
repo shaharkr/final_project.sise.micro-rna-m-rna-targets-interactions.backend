@@ -5,6 +5,7 @@ import pandas as pd
 from configurator import Configurator
 
 
+@cache.memoize()
 def update_general_stats():
     num_of_organisms = db.session.query(Organism).count()
     num_od_datasets = db.session.query(DataSet).count()
@@ -29,7 +30,7 @@ def update_general_stats():
         db.session.commit()
 
 
-@cache.memoize(timeout=12000)
+@cache.memoize()
 def get_general_stats():
     try:
         stats = db.session.query(GeneralStats).all()
@@ -103,7 +104,7 @@ def get_top_n_dict(statistics_dict, n):
     return top_dict
 
 
-@cache.memoize(timeout=12000)
+@cache.memoize()
 def get_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
               site_types, gene_ids, regions, feature_name, text_query=None):
     if text_query is None:
@@ -132,6 +133,7 @@ def get_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs,
         print(f'dal failed to get oneD statistics for {feature_name}. error: {str(e)}')
 
 
+@cache.memoize()
 def get_dataset_statistics(dataset_id):
     try:
         main_features_name_lst = Configurator().get_main_features_names()
