@@ -204,6 +204,27 @@ def get_dataset_statistic(dataset_id):
     return one_d_statistics
 
 
+@app.route('/api/statistics/twoD', methods=['GET'])
+def get_two_d_statistic():
+    one_d_statistics = {}
+    try:
+        data_sets_ids = request.args.getlist('datasetsIds')
+        seed_families = request.args.getlist('seedFamilies')
+        mirna_ids = request.args.getlist('miRnaIds')
+        mirna_seqs = request.args.getlist('miRnaSeqs')
+        site_types = request.args.getlist('siteTypes')
+        gene_ids = request.args.getlist('geneIds')
+        regions = request.args.getlist('regions')
+        feature_name_1 = request.args.get('firstFeature')
+        feature_name_2 = request.args.get('secondFeature')
+        one_d_statistics = statistics.get_two_d(data_sets_ids, seed_families,
+                                                mirna_ids, mirna_seqs,
+                                                site_types, gene_ids,
+                                                regions, feature_name_1, feature_name_2)
+    except Exception as e:
+        print(f'app failed to get general stats. error: {str(e)}')
+    return one_d_statistics
+
 if __name__ == '__main__':
     confg = Configurator()
     mode = confg.get_mode()

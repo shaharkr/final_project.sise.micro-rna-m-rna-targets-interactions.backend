@@ -150,3 +150,13 @@ def get_dataset_statistics(dataset_id):
         return data
     except Exception as e:
         print(f'dal failed to get dataset statistics for id {dataset_id}. error: {str(e)}')
+
+
+@cache.memoize()
+def get_two_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+              site_types, gene_ids, regions, feature_name_1, feature_name_2, text_query=None):
+    try:
+        return []
+    except Exception as e:
+        print(f'dal failed to get twoD statistics for {feature_name_1}~{feature_name_2}. error: {str(e)}')
+
