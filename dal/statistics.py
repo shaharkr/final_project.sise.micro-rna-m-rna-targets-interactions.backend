@@ -56,7 +56,16 @@ def get_general_stats():
 
 def get_query_string_for_one_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
                                site_types, gene_ids, regions, feature_name):
+    where_cond_string = get_where_query_part(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+                               site_types, gene_ids, regions)
     new_feature_name = f'"{feature_name}"'
+    group_by_string = f" GROUP BY {new_feature_name}"
+    select_string = f"SELECT {new_feature_name} as feature_values, count({new_feature_name}) FROM mirna_mrna_interactions"
+    q = f"{select_string}{where_cond_string}{group_by_string}"
+    return q
+
+def get_where_query_part(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+                               site_types, gene_ids, regions):
     seed_families = [f"'{x}'" for x in seed_families]
     mirna_ids = [f"'{x}'" for x in mirna_ids]
     mirna_seqs = [f"'{x}'" for x in mirna_seqs]
@@ -89,10 +98,8 @@ def get_query_string_for_one_d(data_sets_ids, seed_families, mirna_ids, mirna_se
     where_cond_list.append(site_types_string_cond)    
     where_cond_list = list(filter(lambda x: x != "", where_cond_list))
     where_cond_string = f" WHERE {' AND '.join(where_cond_list)}" if len(where_cond_list) > 0 else ""
-    group_by_string = f" GROUP BY {new_feature_name}"
-    select_string = f"SELECT {new_feature_name} as feature_values, count({new_feature_name}) FROM mirna_mrna_interactions"
-    q = f"{select_string}{where_cond_string}{group_by_string}"
-    return q
+    return where_cond_string
+
 
 def get_top_n_dict(statistics_dict, n):
     if len(statistics_dict) < n:
@@ -150,3 +157,42 @@ def get_dataset_statistics(dataset_id):
         return data
     except Exception as e:
         print(f'dal failed to get dataset statistics for id {dataset_id}. error: {str(e)}')
+
+
+def get_query_string_for_two_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+                               site_types, gene_ids, regions, feature_name_1, feature_name_2):
+    where_cond_string = get_where_query_part(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+                                             site_types, gene_ids, regions)
+    new_feature_name_1 = f'"{feature_name_1}"'
+    new_feature_name_2 = f'"{feature_name_2}"'
+    group_by_string = f" GROUP BY {new_feature_name_1}, {new_feature_name_2}"
+    select_string = f"SELECT {new_feature_name_1} as feature_1_value, {new_feature_name_2} as feature_2_value, count(*) FROM mirna_mrna_interactions"
+    q = f"{select_string}{where_cond_string}{group_by_string}"
+    return q
+
+
+@cache.memoize()
+def get_two_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+              site_types, gene_ids, regions, feature1, feature2):
+    text_query = get_query_string_for_two_d(data_sets_ids, seed_families, mirna_ids, mirna_seqs, 
+                                            site_types, gene_ids, regions, feature1, feature2)
+    query = text(text_query)
+    try:
+        result = db.session.execute(query)
+        x = []
+        y = []
+        for row in result:
+            x.append(row.feature_1_value)
+            y.append(row.feature_2_value)
+        
+        data = {"featureX": feature1,
+                "secondFeature": feature2,
+                "statistics": {
+                    "x": x,
+                    "y": y
+                    }
+                }
+        return data
+    except Exception as e:
+        print(f'dal failed to get twoD statistics for {feature1}~{feature2}. error: {str(e)}')
+
